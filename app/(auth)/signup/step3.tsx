@@ -32,7 +32,26 @@ export default function SignupStep3Screen() {
       // Navigate to verification flow
       router.push('/(auth)/verify/intro');
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      // Check if the error is due to user already existing
+      if (error.message?.includes('User already registered') || 
+          error.message?.includes('user_already_exists')) {
+        Alert.alert(
+          'Account Already Exists',
+          'An account with this email address already exists. Would you like to sign in instead?',
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            },
+            {
+              text: 'Sign In',
+              onPress: () => router.push('/(auth)/sign-in')
+            }
+          ]
+        );
+      } else {
+        Alert.alert('Error', error.message);
+      }
     } finally {
       setLoading(false);
     }
