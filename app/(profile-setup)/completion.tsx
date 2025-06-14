@@ -5,7 +5,8 @@ import {
   TouchableOpacity, 
   StyleSheet,
   Animated,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -75,90 +76,95 @@ export default function ProfileCompletionScreen() {
       end={{ x: 1, y: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
-        <Animated.View 
-          style={[
-            styles.content,
-            {
-              opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }],
-            }
-          ]}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.celebrationSection}>
-            <Animated.View 
-              style={[
-                styles.iconContainer,
-                { transform: [{ translateY: bounceTransform }] }
-              ]}
-            >
-              <Heart size={64} color="#F86F6F" strokeWidth={2} fill="#F86F6F" />
-            </Animated.View>
-            
-            <Text style={styles.title}>You're All Set!</Text>
-            <Text style={styles.subtitle}>
-              Welcome to the PuppyLove pack! Your profile is complete and you're ready to start making meaningful connections.
-            </Text>
-
-            <View style={styles.achievementCard}>
-              <Text style={styles.achievementTitle}>🎉 Profile Complete!</Text>
-              <View style={styles.achievementList}>
-                <View style={styles.achievementItem}>
-                  <Text style={styles.checkmark}>✅</Text>
-                  <Text style={styles.achievementText}>Dog avatar selected</Text>
-                </View>
-                <View style={styles.achievementItem}>
-                  <Text style={styles.checkmark}>✅</Text>
-                  <Text style={styles.achievementText}>Personality prompts answered</Text>
-                </View>
-                <View style={styles.achievementItem}>
-                  <Text style={styles.checkmark}>✅</Text>
-                  <Text style={styles.achievementText}>Dream date described</Text>
-                </View>
-                <View style={styles.achievementItem}>
-                  <Text style={styles.checkmark}>✅</Text>
-                  <Text style={styles.achievementText}>Values & lifestyle tagged</Text>
-                </View>
-                <View style={styles.achievementItem}>
-                  <Text style={styles.checkmark}>✅</Text>
-                  <Text style={styles.achievementText}>Dog preferences set</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.nextStepsCard}>
-              <Text style={styles.nextStepsTitle}>What happens next?</Text>
-              <View style={styles.stepsList}>
-                <View style={styles.step}>
-                  <Text style={styles.stepNumber}>1</Text>
-                  <Text style={styles.stepText}>Explore adoptable dogs and answer fun compatibility questions</Text>
-                </View>
-                <View style={styles.step}>
-                  <Text style={styles.stepNumber}>2</Text>
-                  <Text style={styles.stepText}>Get 5 high-quality matches every 3 days based on your answers</Text>
-                </View>
-                <View style={styles.step}>
-                  <Text style={styles.stepNumber}>3</Text>
-                  <Text style={styles.stepText}>Chat with matches and plan your first dog date at a shelter!</Text>
-                </View>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={styles.finishButton}
-              onPress={handleFinishProfile}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.finishButtonText}>Start Exploring Dogs</Text>
-              <ArrowRight size={20} color="white" strokeWidth={2} />
-            </TouchableOpacity>
-
-            <View style={styles.welcomeMessage}>
-              <Text style={styles.welcomeText}>
-                🐾 Ready to find your perfect match through the love of dogs? Let's go!
+          <Animated.View 
+            style={[
+              styles.content,
+              {
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }],
+              }
+            ]}
+          >
+            <View style={styles.celebrationSection}>
+              <Animated.View 
+                style={[
+                  styles.iconContainer,
+                  { transform: [{ translateY: bounceTransform }] }
+                ]}
+              >
+                <Heart size={64} color="#F86F6F" strokeWidth={2} fill="#F86F6F" />
+              </Animated.View>
+              
+              <Text style={styles.title}>You're All Set!</Text>
+              <Text style={styles.subtitle}>
+                Welcome to the PuppyLove pack! Your profile is complete and you're ready to start making meaningful connections.
               </Text>
+
+              <View style={styles.achievementCard}>
+                <Text style={styles.achievementTitle}>🎉 Profile Complete!</Text>
+                <View style={styles.achievementList}>
+                  <View style={styles.achievementItem}>
+                    <Text style={styles.checkmark}>✅</Text>
+                    <Text style={styles.achievementText}>Dog avatar selected</Text>
+                  </View>
+                  <View style={styles.achievementItem}>
+                    <Text style={styles.checkmark}>✅</Text>
+                    <Text style={styles.achievementText}>Personality prompts answered</Text>
+                  </View>
+                  <View style={styles.achievementItem}>
+                    <Text style={styles.checkmark}>✅</Text>
+                    <Text style={styles.achievementText}>Dream date described</Text>
+                  </View>
+                  <View style={styles.achievementItem}>
+                    <Text style={styles.checkmark}>✅</Text>
+                    <Text style={styles.achievementText}>Values & lifestyle tagged</Text>
+                  </View>
+                  <View style={styles.achievementItem}>
+                    <Text style={styles.checkmark}>✅</Text>
+                    <Text style={styles.achievementText}>Dog preferences set</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.nextStepsCard}>
+                <Text style={styles.nextStepsTitle}>What happens next?</Text>
+                <View style={styles.stepsList}>
+                  <View style={styles.step}>
+                    <Text style={styles.stepNumber}>1</Text>
+                    <Text style={styles.stepText}>Explore adoptable dogs and answer fun compatibility questions</Text>
+                  </View>
+                  <View style={styles.step}>
+                    <Text style={styles.stepNumber}>2</Text>
+                    <Text style={styles.stepText}>Get 5 high-quality matches every 3 days based on your answers</Text>
+                  </View>
+                  <View style={styles.step}>
+                    <Text style={styles.stepNumber}>3</Text>
+                    <Text style={styles.stepText}>Chat with matches and plan your first dog date at a shelter!</Text>
+                  </View>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.finishButton}
+                onPress={handleFinishProfile}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.finishButtonText}>Start Exploring Dogs</Text>
+                <ArrowRight size={20} color="white" strokeWidth={2} />
+              </TouchableOpacity>
+
+              <View style={styles.welcomeMessage}>
+                <Text style={styles.welcomeText}>
+                  🐾 Ready to find your perfect match through the love of dogs? Let's go!
+                </Text>
+              </View>
             </View>
-          </View>
-        </Animated.View>
+          </Animated.View>
+        </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -171,13 +177,18 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: 32,
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 40,
+  },
+  content: {
+    alignItems: 'center',
   },
   celebrationSection: {
     alignItems: 'center',
+    width: '100%',
   },
   iconContainer: {
     width: 120,
@@ -301,6 +312,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
+    width: '100%',
   },
   finishButtonText: {
     fontFamily: 'Inter-SemiBold',
@@ -314,6 +326,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderLeftWidth: 4,
     borderLeftColor: '#F86F6F',
+    width: '100%',
   },
   welcomeText: {
     fontFamily: 'Inter-Regular',
