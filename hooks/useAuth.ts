@@ -38,7 +38,7 @@ export function useAuth() {
     };
   }, []);
 
-  const signUp = async (email: string, password: string, username: string) => {
+  const signUp = async (email: string, password: string, firstName: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -53,7 +53,8 @@ export function useAuth() {
         .insert({
           id: data.user.id,
           email: data.user.email!,
-          username,
+          username: firstName, // Using firstName as username for now
+          first_name: firstName,
         });
 
       if (profileError) throw profileError;

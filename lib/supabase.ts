@@ -43,6 +43,7 @@ export interface Database {
           id: string;
           email: string;
           username: string;
+          first_name: string | null;
           dog_avatar_id: string | null;
           bio: string;
           has_dog: boolean;
@@ -58,6 +59,7 @@ export interface Database {
           id: string;
           email: string;
           username: string;
+          first_name?: string | null;
           dog_avatar_id?: string | null;
           bio?: string;
           has_dog?: boolean;
@@ -73,6 +75,7 @@ export interface Database {
           id?: string;
           email?: string;
           username?: string;
+          first_name?: string | null;
           dog_avatar_id?: string | null;
           bio?: string;
           has_dog?: boolean;
