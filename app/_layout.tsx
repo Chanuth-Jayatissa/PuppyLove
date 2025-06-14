@@ -12,6 +12,7 @@ import {
 } from '@expo-google-fonts/inter';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -19,7 +20,8 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   useFrameworkReady();
   
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
   const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const [fontsLoaded, fontError] = useFonts({
@@ -46,7 +48,7 @@ export default function RootLayout() {
     return null;
   }
 
-  if (loading) {
+  if (authLoading || (user && profileLoading)) {
     return null;
   }
 
@@ -78,7 +80,19 @@ export default function RootLayout() {
     );
   }
 
-  // Show main app if authenticated
+  // Show profile setup if authenticated but profile not complete
+  if (user && profile && !profile.profile_complete) {
+    return (
+      <>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(profile-setup)" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </>
+    );
+  }
+
+  // Show main app if authenticated and profile complete
   return (
     <>
       <Stack screenOptions={{ headerShown: false }}>

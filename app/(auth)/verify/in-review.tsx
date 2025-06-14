@@ -65,8 +65,8 @@ export default function InReviewScreen() {
   };
 
   const handleContinue = () => {
-    // Navigate to main app since verification is complete
-    router.replace('/(tabs)');
+    // Navigate to profile setup instead of main app
+    router.replace('/(profile-setup)/step1');
   };
 
   const handleContactSupport = () => {
@@ -95,7 +95,7 @@ export default function InReviewScreen() {
 
             <Text style={styles.successTitle}>Verification Complete!</Text>
             <Text style={styles.successSubtitle}>
-              Welcome to PuppyLove! Your identity has been verified and you're ready to start matching.
+              Welcome to PuppyLove! Your identity has been verified. Now let's set up your profile to start matching.
             </Text>
 
             <View style={styles.welcomeCard}>
@@ -109,7 +109,7 @@ export default function InReviewScreen() {
               onPress={handleContinue}
               activeOpacity={0.8}
             >
-              <Text style={styles.continueButtonText}>Start Matching</Text>
+              <Text style={styles.continueButtonText}>Set Up My Profile</Text>
               <ArrowRight size={20} color="white" strokeWidth={2} />
             </TouchableOpacity>
           </View>
