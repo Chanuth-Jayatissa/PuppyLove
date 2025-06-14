@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Video, Play, CheckCircle, User } from 'lucide-react-native';
+import { ChevronLeft, Video, Play, CircleCheck as CheckCircle, User } from 'lucide-react-native';
 
 export default function SelfieVideoScreen() {
   const router = useRouter();

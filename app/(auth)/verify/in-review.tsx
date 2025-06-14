@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Clock, CheckCircle, MessageCircle, ArrowRight } from 'lucide-react-native';
+import { Clock, CircleCheck as CheckCircle, MessageCircle, ArrowRight } from 'lucide-react-native';
 
 export default function InReviewScreen() {
   const router = useRouter();
