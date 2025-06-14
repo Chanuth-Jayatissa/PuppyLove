@@ -29,20 +29,8 @@ export default function SignupStep3Screen() {
         firstName as string
       );
       
-      // For now, we'll show a success message
-      // In production, this would redirect to actual ID verification
-      Alert.alert(
-        'Account Created!',
-        'Your account has been created successfully. Identity verification will be implemented in the next update.',
-        [
-          {
-            text: 'Continue',
-            onPress: () => {
-              // The auth state change will automatically redirect to the main app
-            }
-          }
-        ]
-      );
+      // Navigate to verification flow
+      router.push('/(auth)/verify/intro');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
