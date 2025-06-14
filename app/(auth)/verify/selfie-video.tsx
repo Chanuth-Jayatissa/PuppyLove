@@ -19,8 +19,8 @@ export default function SelfieVideoScreen() {
 
   const handleStartRecording = () => {
     Alert.alert(
-      'Video Recording',
-      'In a real app, this would start video recording for identity verification.',
+      'Video Recording Simulation',
+      'For testing purposes, we\'ll simulate video recording for identity verification.',
       [
         {
           text: 'Cancel',
@@ -41,11 +41,26 @@ export default function SelfieVideoScreen() {
     );
   };
 
+  const handleSkipForTesting = () => {
+    Alert.alert(
+      'Skip for Testing',
+      'Skip video recording for testing purposes?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Skip',
+          onPress: () => {
+            setHasRecorded(true);
+          }
+        }
+      ]
+    );
+  };
+
   const handleContinue = () => {
-    if (!hasRecorded) {
-      Alert.alert('Required', 'Please record a selfie video to continue.');
-      return;
-    }
     router.push('/(auth)/verify/in-review');
   };
 
@@ -92,6 +107,13 @@ export default function SelfieVideoScreen() {
               </Text>
             </View>
 
+            {/* Testing Notice */}
+            <View style={styles.testingNotice}>
+              <Text style={styles.testingText}>
+                🧪 Testing Mode: You can skip video recording or simulate it
+              </Text>
+            </View>
+
             <View style={styles.instructionsCard}>
               <Text style={styles.instructionsTitle}>Recording Instructions</Text>
               {instructions.map((instruction, index) => (
@@ -130,49 +152,62 @@ export default function SelfieVideoScreen() {
                 )}
               </View>
 
-              <TouchableOpacity
-                style={[
-                  styles.recordButton,
-                  isRecording && styles.recordingButton,
-                  hasRecorded && styles.recordedButton
-                ]}
-                onPress={handleStartRecording}
-                disabled={isRecording || hasRecorded}
-                activeOpacity={0.8}
-              >
+              <View style={styles.buttonGroup}>
+                <TouchableOpacity
+                  style={[
+                    styles.recordButton,
+                    isRecording && styles.recordingButton,
+                    hasRecorded && styles.recordedButton
+                  ]}
+                  onPress={handleStartRecording}
+                  disabled={isRecording || hasRecorded}
+                  activeOpacity={0.8}
+                >
+                  {!hasRecorded && !isRecording && (
+                    <>
+                      <Video size={24} color="white" strokeWidth={2} />
+                      <Text style={styles.recordButtonText}>Start Recording</Text>
+                    </>
+                  )}
+                  
+                  {isRecording && (
+                    <>
+                      <View style={styles.recordingButtonDot} />
+                      <Text style={styles.recordButtonText}>Recording...</Text>
+                    </>
+                  )}
+
+                  {hasRecorded && (
+                    <>
+                      <CheckCircle size={24} color="white" strokeWidth={2} />
+                      <Text style={styles.recordButtonText}>Recorded</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+
+                {/* Testing Skip Button */}
                 {!hasRecorded && !isRecording && (
-                  <>
-                    <Video size={24} color="white" strokeWidth={2} />
-                    <Text style={styles.recordButtonText}>Start Recording</Text>
-                  </>
-                )}
-                
-                {isRecording && (
-                  <>
-                    <View style={styles.recordingButtonDot} />
-                    <Text style={styles.recordButtonText}>Recording...</Text>
-                  </>
+                  <TouchableOpacity
+                    style={styles.skipButton}
+                    onPress={handleSkipForTesting}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.skipButtonText}>Skip for Testing</Text>
+                  </TouchableOpacity>
                 )}
 
                 {hasRecorded && (
-                  <>
-                    <CheckCircle size={24} color="white" strokeWidth={2} />
-                    <Text style={styles.recordButtonText}>Recorded</Text>
-                  </>
+                  <TouchableOpacity
+                    style={styles.retakeButton}
+                    onPress={() => {
+                      setHasRecorded(false);
+                      setIsRecording(false);
+                    }}
+                  >
+                    <Text style={styles.retakeButtonText}>Record Again</Text>
+                  </TouchableOpacity>
                 )}
-              </TouchableOpacity>
-
-              {hasRecorded && (
-                <TouchableOpacity
-                  style={styles.retakeButton}
-                  onPress={() => {
-                    setHasRecorded(false);
-                    setIsRecording(false);
-                  }}
-                >
-                  <Text style={styles.retakeButtonText}>Record Again</Text>
-                </TouchableOpacity>
-              )}
+              </View>
             </View>
 
             <View style={styles.privacyNote}>
@@ -182,12 +217,8 @@ export default function SelfieVideoScreen() {
             </View>
 
             <TouchableOpacity
-              style={[
-                styles.continueButton,
-                !hasRecorded && styles.buttonDisabled
-              ]}
+              style={styles.continueButton}
               onPress={handleContinue}
-              disabled={!hasRecorded}
               activeOpacity={0.8}
             >
               <Text style={styles.continueButtonText}>Continue</Text>
@@ -256,7 +287,7 @@ const styles = StyleSheet.create({
   },
   titleSection: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   title: {
     fontFamily: 'PlayfairDisplay-Bold',
@@ -271,6 +302,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     lineHeight: 24,
+    textAlign: 'center',
+  },
+  testingNotice: {
+    backgroundColor: '#FBBF77',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  testingText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: '#444B5A',
     textAlign: 'center',
   },
   instructionsCard: {
@@ -364,6 +408,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: 'center',
   },
+  buttonGroup: {
+    alignItems: 'center',
+    gap: 12,
+  },
   recordButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -395,8 +443,18 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: 'white',
   },
+  skipButton: {
+    backgroundColor: '#B5C1B6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  skipButtonText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: 'white',
+  },
   retakeButton: {
-    marginTop: 16,
     paddingVertical: 8,
   },
   retakeButtonText: {
@@ -427,9 +485,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
-  },
-  buttonDisabled: {
-    backgroundColor: '#B5C1B6',
   },
   continueButtonText: {
     fontFamily: 'Inter-SemiBold',

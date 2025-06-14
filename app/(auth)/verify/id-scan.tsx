@@ -18,10 +18,10 @@ export default function IdScanScreen() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const handleTakePhoto = () => {
-    // Simulate taking a photo
+    // For testing - simulate taking a photo without actual camera
     Alert.alert(
-      'Camera',
-      'In a real app, this would open the camera to take a photo of your ID.',
+      'Photo Simulation',
+      'For testing purposes, we\'ll simulate taking a photo of your ID.',
       [
         {
           text: 'Cancel',
@@ -39,10 +39,10 @@ export default function IdScanScreen() {
   };
 
   const handleUploadFromGallery = () => {
-    // Simulate uploading from gallery
+    // For testing - simulate uploading from gallery
     Alert.alert(
-      'Photo Gallery',
-      'In a real app, this would open your photo gallery to select an ID photo.',
+      'Upload Simulation',
+      'For testing purposes, we\'ll simulate uploading an ID photo.',
       [
         {
           text: 'Cancel',
@@ -59,11 +59,28 @@ export default function IdScanScreen() {
     );
   };
 
+  const handleSkipForTesting = () => {
+    // Allow skipping for testing purposes
+    Alert.alert(
+      'Skip for Testing',
+      'Skip ID verification for testing purposes?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Skip',
+          onPress: () => {
+            // Add a placeholder image to simulate upload
+            setUploadedImages(['https://images.pexels.com/photos/1851164/pexels-photo-1851164.jpeg']);
+          }
+        }
+      ]
+    );
+  };
+
   const handleContinue = () => {
-    if (uploadedImages.length === 0) {
-      Alert.alert('Required', 'Please upload at least one photo of your ID to continue.');
-      return;
-    }
     router.push('/(auth)/verify/selfie-video');
   };
 
@@ -110,6 +127,13 @@ export default function IdScanScreen() {
               </Text>
             </View>
 
+            {/* Testing Notice */}
+            <View style={styles.testingNotice}>
+              <Text style={styles.testingText}>
+                🧪 Testing Mode: You can skip verification or simulate uploads
+              </Text>
+            </View>
+
             <View style={styles.instructionsCard}>
               <Text style={styles.instructionsTitle}>Instructions</Text>
               {instructions.map((instruction, index) => (
@@ -145,6 +169,15 @@ export default function IdScanScreen() {
                 </TouchableOpacity>
               </View>
 
+              {/* Testing Skip Button */}
+              <TouchableOpacity
+                style={styles.skipButton}
+                onPress={handleSkipForTesting}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.skipButtonText}>Skip for Testing</Text>
+              </TouchableOpacity>
+
               {uploadedImages.length > 0 && (
                 <View style={styles.uploadedSection}>
                   <Text style={styles.uploadedTitle}>Uploaded Images</Text>
@@ -170,12 +203,8 @@ export default function IdScanScreen() {
             </View>
 
             <TouchableOpacity
-              style={[
-                styles.continueButton,
-                uploadedImages.length === 0 && styles.buttonDisabled
-              ]}
+              style={styles.continueButton}
               onPress={handleContinue}
-              disabled={uploadedImages.length === 0}
               activeOpacity={0.8}
             >
               <Text style={styles.continueButtonText}>Continue</Text>
@@ -244,7 +273,7 @@ const styles = StyleSheet.create({
   },
   titleSection: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   title: {
     fontFamily: 'PlayfairDisplay-Bold',
@@ -259,6 +288,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     lineHeight: 24,
+    textAlign: 'center',
+  },
+  testingNotice: {
+    backgroundColor: '#FBBF77',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  testingText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: '#444B5A',
     textAlign: 'center',
   },
   instructionsCard: {
@@ -311,7 +353,7 @@ const styles = StyleSheet.create({
   uploadOptions: {
     flexDirection: 'row',
     gap: 16,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   uploadOption: {
     flex: 1,
@@ -336,6 +378,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 12,
     color: '#6B7280',
+  },
+  skipButton: {
+    backgroundColor: '#B5C1B6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
+  skipButtonText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: 'white',
   },
   uploadedSection: {
     marginTop: 16,
@@ -400,9 +455,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
-  },
-  buttonDisabled: {
-    backgroundColor: '#B5C1B6',
   },
   continueButtonText: {
     fontFamily: 'Inter-SemiBold',
