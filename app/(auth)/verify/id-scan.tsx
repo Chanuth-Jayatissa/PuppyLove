@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Camera, Upload, Shield, AlertCircle } from 'lucide-react-native';
+import { ChevronLeft, Camera, Upload, Shield, CircleAlert as AlertCircle } from 'lucide-react-native';
 
 export default function IdScanScreen() {
   const router = useRouter();
