@@ -1,42 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, PanResponder, Animated, Dimensions, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Heart, X, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
+import { useDogs } from '@/hooks/useDogs';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-const dogData = [
-  {
-    id: 1,
-    name: 'Buddy',
-    breed: 'Golden Retriever',
-    age: '2 years old',
-    size: 'Large',
-    distance: '3 miles from you',
-    images: [
-      'https://images.pexels.com/photos/551628/pexels-photo-551628.jpeg',
-      'https://images.pexels.com/photos/160846/french-bulldog-summer-smile-joy-160846.jpeg',
-      'https://images.pexels.com/photos/356378/pexels-photo-356378.jpeg',
-    ],
-    tags: ['Playful Explorer', 'Great with Kids', 'High Energy'],
-    funFact: 'Loves sunbathing and rolling in grass!',
-  },
-  {
-    id: 2,
-    name: 'Luna',
-    breed: 'Border Collie',
-    age: '1.5 years old',
-    size: 'Medium',
-    distance: '5 miles from you',
-    images: [
-      'https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg',
-      'https://images.pexels.com/photos/97082/pexels-photo-97082.jpeg',
-      'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg',
-    ],
-    tags: ['Smart Cookie', 'Gentle Soul', 'Loves Fetch'],
-    funFact: 'Can solve puzzle toys in under 5 minutes!',
-  },
-];
 
 const quizQuestions = [
   {
@@ -52,6 +20,7 @@ const quizQuestions = [
 ];
 
 export default function ExploreScreen() {
+  const { dogs, loading } = useDogs();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState(0);
@@ -116,7 +85,7 @@ export default function ExploreScreen() {
     if ((exploredCount + 1) % 3 === 0) {
       setShowQuiz(true);
     } else {
-      setCurrentIndex((prev) => (prev + 1) % dogData.length);
+      setCurrentIndex((prev) => (prev + 1) % dogs.length);
     }
   };
 
@@ -124,13 +93,35 @@ export default function ExploreScreen() {
     setQuizAnswered(prev => prev + 1);
     setShowQuiz(false);
     setCurrentQuiz((prev) => (prev + 1) % quizQuestions.length);
-    setCurrentIndex((prev) => (prev + 1) % dogData.length);
+    setCurrentIndex((prev) => (prev + 1) % dogs.length);
   };
 
   const cycleImage = () => {
-    const currentDog = dogData[currentIndex];
+    if (dogs.length === 0) return;
+    const currentDog = dogs[currentIndex];
     setImageIndex((prev) => (prev + 1) % currentDog.images.length);
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading dogs... 🐶</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (dogs.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No dogs available right now 🐾</Text>
+          <Text style={styles.emptySubtext}>Check back soon for more furry friends!</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (exploredCount >= 15) {
     return (
@@ -182,7 +173,7 @@ export default function ExploreScreen() {
     );
   }
 
-  const currentDog = dogData[currentIndex];
+  const currentDog = dogs[currentIndex];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -239,7 +230,7 @@ export default function ExploreScreen() {
             </View>
 
             <View style={styles.funFactContainer}>
-              <Text style={styles.funFact}>"{currentDog.funFact}"</Text>
+              <Text style={styles.funFact}>"{currentDog.fun_fact}"</Text>
             </View>
 
             <View style={styles.actions}>
@@ -271,6 +262,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF8F0',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#444B5A',
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  emptyText: {
+    fontSize: 20,
+    color: '#444B5A',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 16,
+    color: '#B5C1B6',
+    textAlign: 'center',
   },
   header: {
     paddingHorizontal: 20,

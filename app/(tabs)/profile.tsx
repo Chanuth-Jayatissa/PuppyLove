@@ -1,16 +1,8 @@
-import React, { useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check, CreditCard as Edit3 } from 'lucide-react-native';
-
-const dogAvatars = [
-  { id: 'corgi', emoji: '🐕‍🦺', name: 'Corgi', trait: 'Loyal & Low-key' },
-  { id: 'husky', emoji: '🐺', name: 'Husky', trait: 'Bold & Energetic' },
-  { id: 'golden', emoji: '🦮', name: 'Golden', trait: 'Warm & Friendly' },
-  { id: 'terrier', emoji: '🐶', name: 'Terrier', trait: 'Curious & Confident' },
-  { id: 'bulldog', emoji: '🐕', name: 'Bulldog', trait: 'Calm & Steady' },
-  { id: 'poodle', emoji: '🐩', name: 'Poodle', trait: 'Smart & Playful' },
-];
+import { Check } from 'lucide-react-native';
+import { useProfile } from '@/hooks/useProfile';
 
 const promptOptions = [
   "If I were a dog, I'd spend my day...",
@@ -20,14 +12,28 @@ const promptOptions = [
   "Dogs bring out this side of me...",
 ];
 
-const tagOptions = [
-  'Nature-Loving', 'Goofball Energy', 'Morning Person', 'Calm & Grounded',
-  'Likes Routine', 'Spontaneous Adventurer', 'Patient with Dogs', 'Couch Cuddler',
-  'Shelter Volunteer', 'Dog-Park Regular', 'High Energy', 'Gentle Soul',
-];
+const promptTypeMap: { [key: string]: string } = {
+  "If I were a dog, I'd spend my day...": 'ideal_day',
+  "A dog and I would have the most fun doing this together...": 'fun_activity',
+  "My ideal weekend with a dog looks like...": 'weekend',
+  "The kind of dog I'd bond with is...": 'dream_bond',
+  "Dogs bring out this side of me...": 'dog_connection',
+};
 
 export default function ProfileScreen() {
-  const [selectedAvatar, setSelectedAvatar] = useState('golden');
+  const { 
+    profile, 
+    dogAvatars, 
+    tags, 
+    userTags, 
+    prompts, 
+    loading,
+    updateProfile,
+    updateUserTags,
+    updatePrompt
+  } = useProfile();
+
+  const [selectedAvatar, setSelectedAvatar] = useState<string>('');
   const [selectedPrompts, setSelectedPrompts] = useState<string[]>([]);
   const [promptAnswers, setPromptAnswers] = useState<{[key: string]: string}>({});
   const [dreamDateBio, setDreamDateBio] = useState('');
@@ -37,6 +43,42 @@ export default function ProfileScreen() {
   const [consideringAdoption, setConsideringAdoption] = useState(false);
   const [preferredEnergy, setPreferredEnergy] = useState('');
   const [preferredSize, setPreferredSize] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setSelectedAvatar(profile.dog_avatar_id || '');
+      setDreamDateBio(profile.bio || '');
+      setHasDog(profile.has_dog ? 'Yes' : 'No');
+      setIsVolunteer(profile.volunteers);
+      setConsideringAdoption(profile.wants_adoption);
+      setPreferredEnergy(profile.preferred_energy);
+      setPreferredSize(profile.preferred_size);
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    setSelectedTags(userTags);
+  }, [userTags]);
+
+  useEffect(() => {
+    // Initialize prompts
+    const promptMap: {[key: string]: string} = {};
+    const selectedPromptsList: string[] = [];
+    
+    prompts.forEach(prompt => {
+      const promptText = Object.keys(promptTypeMap).find(
+        key => promptTypeMap[key] === prompt.prompt_type
+      );
+      if (promptText) {
+        promptMap[promptText] = prompt.answer;
+        selectedPromptsList.push(promptText);
+      }
+    });
+    
+    setPromptAnswers(promptMap);
+    setSelectedPrompts(selectedPromptsList);
+  }, [prompts]);
 
   const togglePrompt = (prompt: string) => {
     if (selectedPrompts.includes(prompt)) {
@@ -49,11 +91,11 @@ export default function ProfileScreen() {
     }
   };
 
-  const toggleTag = (tag: string) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter(t => t !== tag));
+  const toggleTag = (tagId: string) => {
+    if (selectedTags.includes(tagId)) {
+      setSelectedTags(selectedTags.filter(t => t !== tagId));
     } else if (selectedTags.length < 5) {
-      setSelectedTags([...selectedTags, tag]);
+      setSelectedTags([...selectedTags, tagId]);
     }
   };
 
@@ -84,6 +126,50 @@ export default function ProfileScreen() {
     );
   };
 
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      // Update profile
+      await updateProfile({
+        dog_avatar_id: selectedAvatar,
+        bio: dreamDateBio,
+        has_dog: hasDog === 'Yes',
+        volunteers: isVolunteer,
+        wants_adoption: consideringAdoption,
+        preferred_energy: preferredEnergy,
+        preferred_size: preferredSize,
+        profile_complete: isProfileComplete(),
+      });
+
+      // Update tags
+      await updateUserTags(selectedTags);
+
+      // Update prompts
+      for (const prompt of selectedPrompts) {
+        const answer = promptAnswers[prompt];
+        if (answer) {
+          await updatePrompt(promptTypeMap[prompt], answer);
+        }
+      }
+
+      Alert.alert('Success', 'Profile updated successfully!');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading profile... 🐾</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -113,7 +199,7 @@ export default function ProfileScreen() {
                 onPress={() => setSelectedAvatar(avatar.id)}
               >
                 <Text style={styles.avatarEmoji}>{avatar.emoji}</Text>
-                <Text style={styles.avatarName}>{avatar.name}</Text>
+                <Text style={styles.avatarName}>{avatar.label}</Text>
                 <Text style={styles.avatarTrait}>{avatar.trait}</Text>
                 {selectedAvatar === avatar.id && (
                   <View style={styles.checkIcon}>
@@ -189,22 +275,22 @@ export default function ProfileScreen() {
           </Text>
           
           <View style={styles.tagsGrid}>
-            {tagOptions.map((tag, index) => (
+            {tags.map((tag) => (
               <TouchableOpacity
-                key={index}
+                key={tag.id}
                 style={[
                   styles.tag,
-                  selectedTags.includes(tag) && styles.selectedTag
+                  selectedTags.includes(tag.id) && styles.selectedTag
                 ]}
-                onPress={() => toggleTag(tag)}
+                onPress={() => toggleTag(tag.id)}
               >
                 <Text
                   style={[
                     styles.tagText,
-                    selectedTags.includes(tag) && styles.selectedTagText
+                    selectedTags.includes(tag.id) && styles.selectedTagText
                   ]}
                 >
-                  {tag}
+                  {tag.label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -312,12 +398,13 @@ export default function ProfileScreen() {
           <TouchableOpacity
             style={[
               styles.submitButton,
-              !isProfileComplete() && styles.disabledButton
+              (!isProfileComplete() || saving) && styles.disabledButton
             ]}
-            disabled={!isProfileComplete()}
+            disabled={!isProfileComplete() || saving}
+            onPress={handleSave}
           >
             <Text style={styles.submitButtonText}>
-              {isProfileComplete() ? 'Finish My Profile' : 'Complete Required Fields'}
+              {saving ? 'Saving...' : isProfileComplete() ? 'Save My Profile' : 'Complete Required Fields'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -330,6 +417,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF8F0',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#444B5A',
+    fontWeight: '600',
   },
   scrollView: {
     flex: 1,
