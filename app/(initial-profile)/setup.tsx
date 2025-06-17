@@ -44,7 +44,8 @@ export default function InitialProfileSetupScreen() {
     try {
       // Simulate account creation
       await new Promise(resolve => setTimeout(resolve, 1000));
-      router.replace('/(verification)/intro');
+      // Fixed navigation path to verification intro
+      router.push('/(verification)/intro');
     } catch (error: any) {
       Alert.alert('Error', 'Account creation failed. Please try again.');
     } finally {
