@@ -50,7 +50,7 @@ const matches = [
     buttonText: 'Book Dog Date',
     backgroundColor: '#7AC79E',
     reminder: '1 day left to book your dog date',
-    route: '/(tabs)/book-date',
+    route: '/book-date',
   },
   {
     id: 4,
@@ -87,7 +87,7 @@ export default function MatchesScreen() {
   };
 
   const handleDogPicksReady = () => {
-    router.push('/(tabs)/book-date');
+    router.push('/book-date');
   };
 
   return (
