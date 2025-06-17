@@ -108,29 +108,6 @@ export default function MatchesScreen() {
     }
   };
 
-  const handleChooseDogsTogther = () => {
-    Alert.alert(
-      'Choose Dogs Together! 🐾',
-      'You and Sarah will both pick your favorite dogs from the available options. Once you both choose, you can book your date!',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        },
-        {
-          text: 'Start Choosing',
-          onPress: () => {
-            Alert.alert(
-              'Dog Selection',
-              'This feature will let you and your match browse available dogs at local shelters and pick your favorites together!',
-              [{ text: 'Sounds great!' }]
-            );
-          }
-        }
-      ]
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -231,24 +208,6 @@ export default function MatchesScreen() {
               )}
             </View>
           ))}
-        </View>
-
-        {/* Dog Mini-Match Alert */}
-        <View style={styles.miniMatchAlert}>
-          <View style={styles.alertHeader}>
-            <Heart size={20} color="#F86F6F" strokeWidth={2} />
-            <Text style={styles.alertTitle}>Dog Picks Ready!</Text>
-          </View>
-          <Text style={styles.alertText}>
-            You and Sarah both need to pick a dog for your date. Choose your favorite pup together!
-          </Text>
-          <TouchableOpacity 
-            style={styles.alertButton}
-            onPress={handleChooseDogsTogther}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.alertButtonText}>Choose Dogs Together</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -426,41 +385,6 @@ const styles = StyleSheet.create({
   expiredText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  miniMatchAlert: {
-    backgroundColor: '#FBBF77',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 32,
-  },
-  alertHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  alertTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#444B5A',
-    marginLeft: 8,
-  },
-  alertText: {
-    fontSize: 14,
-    color: '#444B5A',
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  alertButton: {
-    backgroundColor: '#F86F6F',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    alignSelf: 'flex-start',
-  },
-  alertButtonText: {
-    color: 'white',
-    fontSize: 14,
     fontWeight: '600',
   },
 });
