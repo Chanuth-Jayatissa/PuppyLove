@@ -30,7 +30,7 @@ export default function SignInScreen() {
     try {
       // Simulate sign in
       await new Promise(resolve => setTimeout(resolve, 1000));
-      router.replace('/(verification)/intro');
+      router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert('Error', 'Sign in failed. Please try again.');
     } finally {
@@ -39,7 +39,7 @@ export default function SignInScreen() {
   };
 
   const handleSignUp = () => {
-    router.push('/(auth)/signup');
+    router.push('/(onboarding)');
   };
 
   const handleSkipForDemo = () => {
