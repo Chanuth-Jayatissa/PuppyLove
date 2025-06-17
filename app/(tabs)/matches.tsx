@@ -174,17 +174,6 @@ export default function MatchesScreen() {
           ))}
         </View>
 
-        {/* Empty State (when no matches) */}
-        {matches.length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateEmoji}>🐶</Text>
-            <Text style={styles.emptyStateTitle}>Your perfect pack is on the way!</Text>
-            <TouchableOpacity style={styles.exploreButton}>
-              <Text style={styles.exploreButtonText}>Explore More Dogs</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
         {/* Dog Mini-Match Alert */}
         <View style={styles.miniMatchAlert}>
           <View style={styles.alertHeader}>
@@ -374,32 +363,6 @@ const styles = StyleSheet.create({
   expiredText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyStateEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#444B5A',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  exploreButton: {
-    backgroundColor: '#F86F6F',
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-  },
-  exploreButtonText: {
-    color: 'white',
-    fontSize: 14,
     fontWeight: '600',
   },
   miniMatchAlert: {

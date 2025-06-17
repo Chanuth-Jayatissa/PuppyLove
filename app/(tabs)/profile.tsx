@@ -1,8 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check } from 'lucide-react-native';
-import { useProfile } from '@/hooks/useProfile';
+
+const mockDogAvatars = [
+  { id: '1', emoji: '🐕‍🦺', label: 'Corgi', trait: 'Loyal & Low-key' },
+  { id: '2', emoji: '🐺', label: 'Husky', trait: 'Bold & Energetic' },
+  { id: '3', emoji: '🦮', label: 'Golden', trait: 'Warm & Friendly' },
+  { id: '4', emoji: '🐶', label: 'Terrier', trait: 'Curious & Confident' },
+  { id: '5', emoji: '🐕', label: 'Bulldog', trait: 'Calm & Steady' },
+  { id: '6', emoji: '🐩', label: 'Poodle', trait: 'Smart & Playful' },
+];
+
+const mockTags = [
+  { id: '1', label: 'Nature-Loving' },
+  { id: '2', label: 'Goofball Energy' },
+  { id: '3', label: 'Morning Person' },
+  { id: '4', label: 'Calm & Grounded' },
+  { id: '5', label: 'Likes Routine' },
+  { id: '6', label: 'Spontaneous Adventurer' },
+  { id: '7', label: 'Patient with Dogs' },
+  { id: '8', label: 'Couch Cuddler' },
+  { id: '9', label: 'Shelter Volunteer' },
+  { id: '10', label: 'Dog-Park Regular' },
+  { id: '11', label: 'High Energy' },
+  { id: '12', label: 'Gentle Soul' },
+];
 
 const promptOptions = [
   "If I were a dog, I'd spend my day...",
@@ -12,73 +35,21 @@ const promptOptions = [
   "Dogs bring out this side of me...",
 ];
 
-const promptTypeMap: { [key: string]: string } = {
-  "If I were a dog, I'd spend my day...": 'ideal_day',
-  "A dog and I would have the most fun doing this together...": 'fun_activity',
-  "My ideal weekend with a dog looks like...": 'weekend',
-  "The kind of dog I'd bond with is...": 'dream_bond',
-  "Dogs bring out this side of me...": 'dog_connection',
-};
-
 export default function ProfileScreen() {
-  const { 
-    profile, 
-    dogAvatars, 
-    tags, 
-    userTags, 
-    prompts, 
-    loading,
-    updateProfile,
-    updateUserTags,
-    updatePrompt
-  } = useProfile();
-
-  const [selectedAvatar, setSelectedAvatar] = useState<string>('');
-  const [selectedPrompts, setSelectedPrompts] = useState<string[]>([]);
-  const [promptAnswers, setPromptAnswers] = useState<{[key: string]: string}>({});
-  const [dreamDateBio, setDreamDateBio] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [hasDog, setHasDog] = useState<string>('');
-  const [isVolunteer, setIsVolunteer] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState('1');
+  const [selectedPrompts, setSelectedPrompts] = useState<string[]>([promptOptions[0], promptOptions[1], promptOptions[2]]);
+  const [promptAnswers, setPromptAnswers] = useState<{[key: string]: string}>({
+    [promptOptions[0]]: 'Playing fetch in the park and then napping in a sunny spot!',
+    [promptOptions[1]]: 'Going on hiking adventures and exploring new trails together.',
+    [promptOptions[2]]: 'A morning walk, dog café brunch, and afternoon cuddles on the couch.',
+  });
+  const [dreamDateBio, setDreamDateBio] = useState('We\'d meet at the shelter, pick a pup, then walk to a dog café and share treats while getting to know each other.');
+  const [selectedTags, setSelectedTags] = useState<string[]>(['1', '3', '6', '9']);
+  const [hasDog, setHasDog] = useState('Yes');
+  const [isVolunteer, setIsVolunteer] = useState(true);
   const [consideringAdoption, setConsideringAdoption] = useState(false);
-  const [preferredEnergy, setPreferredEnergy] = useState('');
-  const [preferredSize, setPreferredSize] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (profile) {
-      setSelectedAvatar(profile.dog_avatar_id || '');
-      setDreamDateBio(profile.bio || '');
-      setHasDog(profile.has_dog ? 'Yes' : 'No');
-      setIsVolunteer(profile.volunteers);
-      setConsideringAdoption(profile.wants_adoption);
-      setPreferredEnergy(profile.preferred_energy);
-      setPreferredSize(profile.preferred_size);
-    }
-  }, [profile]);
-
-  useEffect(() => {
-    setSelectedTags(userTags);
-  }, [userTags]);
-
-  useEffect(() => {
-    // Initialize prompts
-    const promptMap: {[key: string]: string} = {};
-    const selectedPromptsList: string[] = [];
-    
-    prompts.forEach(prompt => {
-      const promptText = Object.keys(promptTypeMap).find(
-        key => promptTypeMap[key] === prompt.prompt_type
-      );
-      if (promptText) {
-        promptMap[promptText] = prompt.answer;
-        selectedPromptsList.push(promptText);
-      }
-    });
-    
-    setPromptAnswers(promptMap);
-    setSelectedPrompts(selectedPromptsList);
-  }, [prompts]);
+  const [preferredEnergy, setPreferredEnergy] = useState('Medium');
+  const [preferredSize, setPreferredSize] = useState('Any');
 
   const togglePrompt = (prompt: string) => {
     if (selectedPrompts.includes(prompt)) {
@@ -113,63 +84,6 @@ export default function ProfileScreen() {
     return Math.round((completed / total) * 100);
   };
 
-  const isProfileComplete = () => {
-    return (
-      selectedAvatar &&
-      selectedPrompts.length >= 3 &&
-      selectedPrompts.every(p => promptAnswers[p]?.length > 0) &&
-      dreamDateBio.length >= 50 &&
-      selectedTags.length >= 3 &&
-      hasDog &&
-      preferredEnergy &&
-      preferredSize
-    );
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      // Update profile
-      await updateProfile({
-        dog_avatar_id: selectedAvatar,
-        bio: dreamDateBio,
-        has_dog: hasDog === 'Yes',
-        volunteers: isVolunteer,
-        wants_adoption: consideringAdoption,
-        preferred_energy: preferredEnergy,
-        preferred_size: preferredSize,
-        profile_complete: isProfileComplete(),
-      });
-
-      // Update tags
-      await updateUserTags(selectedTags);
-
-      // Update prompts
-      for (const prompt of selectedPrompts) {
-        const answer = promptAnswers[prompt];
-        if (answer) {
-          await updatePrompt(promptTypeMap[prompt], answer);
-        }
-      }
-
-      Alert.alert('Success', 'Profile updated successfully!');
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to update profile');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading profile... 🐾</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -189,7 +103,7 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Who's Your Inner Pup?</Text>
           <View style={styles.avatarGrid}>
-            {dogAvatars.map((avatar) => (
+            {mockDogAvatars.map((avatar) => (
               <TouchableOpacity
                 key={avatar.id}
                 style={[
@@ -275,7 +189,7 @@ export default function ProfileScreen() {
           </Text>
           
           <View style={styles.tagsGrid}>
-            {tags.map((tag) => (
+            {mockTags.map((tag) => (
               <TouchableOpacity
                 key={tag.id}
                 style={[
@@ -396,16 +310,10 @@ export default function ProfileScreen() {
         {/* Submit Button */}
         <View style={styles.submitSection}>
           <TouchableOpacity
-            style={[
-              styles.submitButton,
-              (!isProfileComplete() || saving) && styles.disabledButton
-            ]}
-            disabled={!isProfileComplete() || saving}
-            onPress={handleSave}
+            style={styles.submitButton}
+            activeOpacity={0.8}
           >
-            <Text style={styles.submitButtonText}>
-              {saving ? 'Saving...' : isProfileComplete() ? 'Save My Profile' : 'Complete Required Fields'}
-            </Text>
+            <Text style={styles.submitButtonText}>Save My Profile</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -417,16 +325,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF8F0',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 18,
-    color: '#444B5A',
-    fontWeight: '600',
   },
   scrollView: {
     flex: 1,
@@ -715,9 +613,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
-  },
-  disabledButton: {
-    backgroundColor: '#B5C1B6',
   },
   submitButtonText: {
     color: 'white',

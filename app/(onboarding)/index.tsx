@@ -64,7 +64,7 @@ export default function OnboardingScreen() {
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      router.replace('/(onboarding)/signup');
+      router.replace('/(tabs)');
     });
   };
 
@@ -139,16 +139,6 @@ export default function OnboardingScreen() {
       </ScrollView>
 
       {renderDots()}
-
-      {/* Back to Sign In Link */}
-      <View style={styles.backToSignIn}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backLink}
-        >
-          <Text style={styles.backLinkText}>Already have an account? Sign In</Text>
-        </TouchableOpacity>
-      </View>
     </Animated.View>
   );
 }
@@ -246,7 +236,7 @@ const styles = StyleSheet.create({
   },
   dotsContainer: {
     position: 'absolute',
-    bottom: 140,
+    bottom: 80,
     left: 0,
     right: 0,
     flexDirection: 'row',
@@ -258,22 +248,5 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#B5C1B6',
-  },
-  backToSignIn: {
-    position: 'absolute',
-    bottom: 60,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  backLink: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-  },
-  backLinkText: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    color: '#8EC6DB',
-    textAlign: 'center',
   },
 });
