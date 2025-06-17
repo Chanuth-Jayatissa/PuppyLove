@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { MessageCircle, Calendar, Clock, Heart, User } from 'lucide-react-native';
 
 const timelineSteps = [
@@ -23,6 +24,7 @@ const matches = [
     buttonText: 'Keep Chatting',
     backgroundColor: '#8EC6DB',
     reminder: null,
+    route: '/(tabs)/chat',
   },
   {
     id: 2,
@@ -35,6 +37,7 @@ const matches = [
     buttonText: 'Message Now',
     backgroundColor: '#FBBF77',
     reminder: 'Don\'t let this match expire — 2 messages left today',
+    route: '/(tabs)/chat',
   },
   {
     id: 3,
@@ -47,6 +50,7 @@ const matches = [
     buttonText: 'Book Dog Date',
     backgroundColor: '#7AC79E',
     reminder: '1 day left to book your dog date',
+    route: '/(tabs)/book-date',
   },
   {
     id: 4,
@@ -59,10 +63,13 @@ const matches = [
     buttonText: null,
     backgroundColor: '#B5C1B6',
     reminder: null,
+    route: null,
   },
 ];
 
 export default function MatchesScreen() {
+  const router = useRouter();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'chat_active': return '#8EC6DB';
@@ -71,6 +78,16 @@ export default function MatchesScreen() {
       case 'expired': return '#B5C1B6';
       default: return '#B5C1B6';
     }
+  };
+
+  const handleMatchAction = (match: typeof matches[0]) => {
+    if (match.route) {
+      router.push(match.route as any);
+    }
+  };
+
+  const handleDogPicksReady = () => {
+    router.push('/(tabs)/book-date');
   };
 
   return (
@@ -160,6 +177,7 @@ export default function MatchesScreen() {
                     { backgroundColor: getStatusColor(match.status) }
                   ]}
                   activeOpacity={0.8}
+                  onPress={() => handleMatchAction(match)}
                 >
                   <Text style={styles.actionButtonText}>{match.buttonText}</Text>
                 </TouchableOpacity>
@@ -183,7 +201,11 @@ export default function MatchesScreen() {
           <Text style={styles.alertText}>
             You and Sarah both need to pick a dog for your date. Choose your favorite pup together!
           </Text>
-          <TouchableOpacity style={styles.alertButton}>
+          <TouchableOpacity 
+            style={styles.alertButton}
+            onPress={handleDogPicksReady}
+            activeOpacity={0.8}
+          >
             <Text style={styles.alertButtonText}>Choose Dogs Together</Text>
           </TouchableOpacity>
         </View>
