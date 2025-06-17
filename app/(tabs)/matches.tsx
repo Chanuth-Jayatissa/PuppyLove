@@ -8,8 +8,7 @@ const timelineSteps = [
   { icon: Heart, label: 'Match Made', completed: true },
   { icon: MessageCircle, label: 'Active Chat', completed: true },
   { icon: User, label: 'Dog Mini-Match', completed: false },
-  { icon: Calendar, label: 'Booking In Progress', completed: false },
-  { icon: Heart, label: 'Date Confirmed', completed: false },
+  { icon: Calendar, label: 'Date Confirmed', completed: false },
 ];
 
 const matches = [

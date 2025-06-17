@@ -7,7 +7,6 @@ import { Search, MessageSquare, Calendar, CreditCard as Edit3, Heart } from 'luc
 const progressSegments = [
   { title: 'Matches Revealed', icon: Heart, completed: true },
   { title: 'Chats Active', icon: MessageSquare, completed: true },
-  { title: 'Date Booking', icon: Calendar, completed: false },
 ];
 
 const quickActions = [
@@ -106,7 +105,7 @@ export default function HomeScreen() {
             ))}
           </View>
           <Text style={styles.progressText}>
-            You've completed 3 of 5 matches · 2 chats active · 1 day left to book your dog date
+            You've completed 3 of 5 matches · 2 chats active · Ready to book your dog date
           </Text>
         </View>
 
