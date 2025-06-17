@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Search, MessageSquare, Calendar, CreditCard as Edit3, Heart } from 'lucide-react-native';
 
 const progressSegments = [
@@ -16,6 +17,7 @@ const quickActions = [
     icon: Search,
     cta: 'Let\'s Go',
     color: '#8EC6DB',
+    route: '/(tabs)/explore',
   },
   {
     title: 'Continue Compatibility Quiz',
@@ -23,6 +25,7 @@ const quickActions = [
     icon: Edit3,
     cta: 'Continue Quiz',
     color: '#FBBF77',
+    route: '/(tabs)/explore',
   },
   {
     title: 'See Who You Matched',
@@ -30,6 +33,7 @@ const quickActions = [
     icon: Heart,
     cta: 'View Matches',
     color: '#F86F6F',
+    route: '/(tabs)/matches',
   },
   {
     title: 'Update My Profile',
@@ -37,10 +41,21 @@ const quickActions = [
     icon: Edit3,
     cta: 'Edit Profile',
     color: '#7AC79E',
+    route: '/(tabs)/profile',
   },
 ];
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const handleQuickAction = (route: string) => {
+    router.push(route as any);
+  };
+
+  const handleBookNow = () => {
+    router.push('/(tabs)/matches');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -87,6 +102,7 @@ export default function HomeScreen() {
                 key={index}
                 style={[styles.actionCard, { borderLeftColor: action.color }]}
                 activeOpacity={0.7}
+                onPress={() => handleQuickAction(action.route)}
               >
                 <View style={styles.actionHeader}>
                   <action.icon size={24} color={action.color} strokeWidth={2} />
@@ -102,16 +118,24 @@ export default function HomeScreen() {
         </View>
 
         {/* Rotating Nudge Banner */}
-        <View style={styles.nudgeBanner}>
+        <TouchableOpacity 
+          style={styles.nudgeBanner}
+          activeOpacity={0.8}
+          onPress={handleBookNow}
+        >
           <Text style={styles.nudgeText}>
             Don't let Max down — book your shelter date today 🐾
           </Text>
-        </View>
+        </TouchableOpacity>
 
         {/* Footer CTA */}
         <View style={styles.footerSection}>
           <Text style={styles.footerText}>Haven't booked your dog date yet?</Text>
-          <TouchableOpacity style={styles.bookButton} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.bookButton} 
+            activeOpacity={0.8}
+            onPress={handleBookNow}
+          >
             <Text style={styles.bookButtonText}>Book Now 🐾</Text>
           </TouchableOpacity>
         </View>
