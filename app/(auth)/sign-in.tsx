@@ -28,9 +28,9 @@ export default function SignInScreen() {
 
     setLoading(true);
     try {
-      // Simulate sign in - in a real app this would authenticate with a backend
+      // Simulate sign in
       await new Promise(resolve => setTimeout(resolve, 1000));
-      router.replace('/(tabs)');
+      router.replace('/(verification)/intro');
     } catch (error: any) {
       Alert.alert('Error', 'Sign in failed. Please try again.');
     } finally {
@@ -39,7 +39,7 @@ export default function SignInScreen() {
   };
 
   const handleSignUp = () => {
-    router.push('/signup');
+    router.push('/(auth)/signup');
   };
 
   const handleSkipForDemo = () => {

@@ -35,9 +35,9 @@ export default function SignUpScreen() {
 
     setLoading(true);
     try {
-      // Simulate sign up - in a real app this would create an account
+      // Simulate sign up
       await new Promise(resolve => setTimeout(resolve, 1000));
-      router.replace('/(onboarding)');
+      router.replace('/(verification)/intro');
     } catch (error: any) {
       Alert.alert('Error', 'Sign up failed. Please try again.');
     } finally {
