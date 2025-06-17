@@ -36,7 +36,10 @@ export default function RootLayout() {
 
   return (
     <>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack 
+        screenOptions={{ headerShown: false }}
+        initialRouteName="sign-in"
+      >
         <Stack.Screen name="sign-in" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
