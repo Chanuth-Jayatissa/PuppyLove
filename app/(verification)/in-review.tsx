@@ -5,7 +5,8 @@ import {
   TouchableOpacity, 
   StyleSheet,
   ScrollView,
-  Animated
+  Animated,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -66,6 +67,25 @@ export default function InReviewScreen() {
 
   const handleContinue = () => {
     router.replace('/(profile-setup)/step1');
+  };
+
+  const handleSkipForTesting = () => {
+    Alert.alert(
+      'Skip Verification Review',
+      'Skip the verification review process for testing?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Skip',
+          onPress: () => {
+            setIsVerified(true);
+          }
+        }
+      ]
+    );
   };
 
   if (isVerified) {
@@ -149,6 +169,13 @@ export default function InReviewScreen() {
               You'll get a notification as soon as it's complete.
             </Text>
 
+            {/* Testing Notice */}
+            <View style={styles.testingNotice}>
+              <Text style={styles.testingText}>
+                🧪 Testing Mode: Verification will complete automatically in 10 seconds, or you can skip
+              </Text>
+            </View>
+
             <View style={styles.statusCard}>
               <View style={styles.statusHeader}>
                 <Text style={styles.statusTitle}>Verification Status</Text>
@@ -187,6 +214,15 @@ export default function InReviewScreen() {
                 This process helps maintain the trust that makes PuppyLove special.
               </Text>
             </View>
+
+            {/* Testing Skip Button */}
+            <TouchableOpacity
+              style={styles.skipButton}
+              onPress={handleSkipForTesting}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.skipButtonText}>Skip Review (Testing)</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -283,6 +319,20 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
     marginBottom: 32,
+  },
+  testingNotice: {
+    backgroundColor: '#FBBF77',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
+    width: '100%',
+  },
+  testingText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: '#444B5A',
+    textAlign: 'center',
   },
   statusCard: {
     backgroundColor: 'white',
@@ -386,6 +436,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#444B5A',
     textAlign: 'center',
+  },
+  skipButton: {
+    backgroundColor: '#B5C1B6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginBottom: 16,
+  },
+  skipButtonText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: 'white',
   },
   continueButton: {
     flexDirection: 'row',

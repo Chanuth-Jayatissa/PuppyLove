@@ -41,6 +41,10 @@ export default function SelfieVideoScreen() {
     );
   };
 
+  const handleSkipForTesting = () => {
+    setHasRecorded(true);
+  };
+
   const handleContinue = () => {
     router.push('/(verification)/in-review');
   };
@@ -85,6 +89,13 @@ export default function SelfieVideoScreen() {
               <Text style={styles.title}>Now, a Quick Selfie</Text>
               <Text style={styles.subtitle}>
                 This helps us confirm you're a real person and matches your face to your ID
+              </Text>
+            </View>
+
+            {/* Testing Notice */}
+            <View style={styles.testingNotice}>
+              <Text style={styles.testingText}>
+                🧪 Testing Mode: You can simulate video recording or skip this step
               </Text>
             </View>
 
@@ -158,6 +169,17 @@ export default function SelfieVideoScreen() {
                     </>
                   )}
                 </TouchableOpacity>
+
+                {/* Testing Skip Button */}
+                {!hasRecorded && !isRecording && (
+                  <TouchableOpacity
+                    style={styles.skipButton}
+                    onPress={handleSkipForTesting}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.skipButtonText}>Skip for Testing</Text>
+                  </TouchableOpacity>
+                )}
 
                 {hasRecorded && (
                   <TouchableOpacity
@@ -266,6 +288,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     lineHeight: 24,
+    textAlign: 'center',
+  },
+  testingNotice: {
+    backgroundColor: '#FBBF77',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  testingText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: '#444B5A',
     textAlign: 'center',
   },
   instructionsCard: {
@@ -393,6 +428,17 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: 'white',
+  },
+  skipButton: {
+    backgroundColor: '#B5C1B6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  skipButtonText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: 'white',
   },
   retakeButton: {
     paddingVertical: 8,

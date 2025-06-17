@@ -54,6 +54,10 @@ export default function IdScanScreen() {
     );
   };
 
+  const handleSkipForTesting = () => {
+    setUploadComplete(true);
+  };
+
   const handleContinue = () => {
     router.push('/(verification)/selfie-video');
   };
@@ -101,6 +105,13 @@ export default function IdScanScreen() {
               </Text>
             </View>
 
+            {/* Testing Notice */}
+            <View style={styles.testingNotice}>
+              <Text style={styles.testingText}>
+                🧪 Testing Mode: You can simulate uploads or skip this step
+              </Text>
+            </View>
+
             <View style={styles.instructionsCard}>
               <Text style={styles.instructionsTitle}>Instructions</Text>
               {instructions.map((instruction, index) => (
@@ -135,6 +146,17 @@ export default function IdScanScreen() {
                   <Text style={styles.uploadOptionSubtitle}>From gallery</Text>
                 </TouchableOpacity>
               </View>
+
+              {/* Testing Skip Button */}
+              {!uploadComplete && (
+                <TouchableOpacity
+                  style={styles.skipButton}
+                  onPress={handleSkipForTesting}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.skipButtonText}>Skip for Testing</Text>
+                </TouchableOpacity>
+              )}
 
               {uploadComplete && (
                 <View style={styles.uploadedSection}>
@@ -239,6 +261,19 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
   },
+  testingNotice: {
+    backgroundColor: '#FBBF77',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  testingText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: '#444B5A',
+    textAlign: 'center',
+  },
   instructionsCard: {
     backgroundColor: 'white',
     borderRadius: 16,
@@ -314,6 +349,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 12,
     color: '#6B7280',
+  },
+  skipButton: {
+    backgroundColor: '#B5C1B6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  skipButtonText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: 'white',
   },
   uploadedSection: {
     backgroundColor: 'rgba(122, 199, 158, 0.1)',

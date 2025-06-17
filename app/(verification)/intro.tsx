@@ -33,6 +33,10 @@ export default function VerificationIntroScreen() {
     }
   ];
 
+  const handleSkipForTesting = () => {
+    router.replace('/(profile-setup)/step1');
+  };
+
   return (
     <LinearGradient
       colors={['#E8F5E8', '#F0F8FF', '#FFF8F0']}
@@ -46,6 +50,13 @@ export default function VerificationIntroScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
+            {/* Testing Notice */}
+            <View style={styles.testingNotice}>
+              <Text style={styles.testingText}>
+                🧪 Testing Mode: You can skip verification or go through the demo flow
+              </Text>
+            </View>
+
             <View style={styles.heroSection}>
               <View style={styles.iconContainer}>
                 <Shield size={48} color="#7AC79E" strokeWidth={2} />
@@ -112,6 +123,17 @@ export default function VerificationIntroScreen() {
             <Text style={styles.timeEstimate}>
               ⏱️ Takes less than 2 minutes
             </Text>
+
+            {/* Testing Skip Button */}
+            <View style={styles.testingSection}>
+              <TouchableOpacity
+                style={styles.skipButton}
+                onPress={handleSkipForTesting}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.skipButtonText}>Skip Verification (Testing)</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -133,6 +155,19 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  testingNotice: {
+    backgroundColor: '#FBBF77',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  testingText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: '#444B5A',
+    textAlign: 'center',
   },
   heroSection: {
     alignItems: 'center',
@@ -296,5 +331,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     textAlign: 'center',
+    marginBottom: 24,
+  },
+  testingSection: {
+    alignItems: 'center',
+  },
+  skipButton: {
+    backgroundColor: '#B5C1B6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  skipButtonText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    color: 'white',
   },
 });
