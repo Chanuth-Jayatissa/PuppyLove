@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, User, Mail, Lock, Calendar } from 'lucide-react-native';
+import { ChevronLeft, User, Mail, Lock, Calendar, MapPin } from 'lucide-react-native';
 
 export default function InitialProfileSetupScreen() {
   const router = useRouter();
@@ -20,6 +20,7 @@ export default function InitialProfileSetupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [age, setAge] = useState('');
+  const [city, setCity] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Error states for inline validation
@@ -27,6 +28,7 @@ export default function InitialProfileSetupScreen() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [ageError, setAgeError] = useState('');
+  const [cityError, setCityError] = useState('');
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,6 +41,7 @@ export default function InitialProfileSetupScreen() {
     setEmailError('');
     setPasswordError('');
     setAgeError('');
+    setCityError('');
 
     let hasErrors = false;
 
@@ -87,6 +90,15 @@ export default function InitialProfileSetupScreen() {
       }
     }
 
+    // Validate city
+    if (!city.trim()) {
+      setCityError('City is required');
+      hasErrors = true;
+    } else if (city.trim().length < 2) {
+      setCityError('Please enter a valid city name');
+      hasErrors = true;
+    }
+
     // If there are validation errors, don't proceed
     if (hasErrors) {
       return;
@@ -118,10 +130,12 @@ export default function InitialProfileSetupScreen() {
            !isNaN(parseInt(age)) && 
            parseInt(age) >= 18 && 
            parseInt(age) <= 100 &&
+           city.trim().length >= 2 &&
            !firstNameError && 
            !emailError && 
            !passwordError && 
-           !ageError;
+           !ageError &&
+           !cityError;
   };
 
   return (
@@ -260,6 +274,34 @@ export default function InitialProfileSetupScreen() {
                   ) : (
                     <Text style={styles.ageHint}>
                       Must be 18 or older to join PuppyLove
+                    </Text>
+                  )}
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <View style={styles.inputHeader}>
+                    <MapPin size={20} color="#B794F6" strokeWidth={2} />
+                    <Text style={styles.inputLabel}>City</Text>
+                  </View>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      cityError ? styles.inputError : null
+                    ]}
+                    placeholder="Enter your city"
+                    value={city}
+                    onChangeText={(text) => {
+                      setCity(text);
+                      if (cityError) setCityError('');
+                    }}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                  />
+                  {cityError ? (
+                    <Text style={styles.errorText}>{cityError}</Text>
+                  ) : (
+                    <Text style={styles.cityHint}>
+                      We'll help you find local shelters and dog dates nearby
                     </Text>
                   )}
                 </View>
@@ -405,6 +447,13 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   ageHint: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 4,
+    marginLeft: 4,
+  },
+  cityHint: {
     fontFamily: 'Inter-Regular',
     fontSize: 12,
     color: '#6B7280',
