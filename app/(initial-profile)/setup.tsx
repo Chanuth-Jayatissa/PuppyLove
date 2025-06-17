@@ -5,7 +5,6 @@ import {
   TextInput, 
   TouchableOpacity, 
   StyleSheet, 
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView
@@ -23,20 +22,73 @@ export default function InitialProfileSetupScreen() {
   const [age, setAge] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Error states for inline validation
+  const [firstNameError, setFirstNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [ageError, setAgeError] = useState('');
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleContinue = async () => {
-    if (!firstName || !email || !password || !age) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
+    // Clear previous errors
+    setFirstNameError('');
+    setEmailError('');
+    setPasswordError('');
+    setAgeError('');
+
+    let hasErrors = false;
+
+    // Validate first name
+    if (!firstName.trim()) {
+      setFirstNameError('First name is required');
+      hasErrors = true;
+    } else if (firstName.trim().length < 2) {
+      setFirstNameError('First name must be at least 2 characters');
+      hasErrors = true;
     }
 
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
-      return;
+    // Validate email
+    if (!email.trim()) {
+      setEmailError('Email address is required');
+      hasErrors = true;
+    } else if (!validateEmail(email.trim())) {
+      setEmailError('Please enter a valid email address');
+      hasErrors = true;
     }
 
-    const ageNum = parseInt(age);
-    if (isNaN(ageNum) || ageNum < 18 || ageNum > 100) {
-      Alert.alert('Error', 'Please enter a valid age (18-100)');
+    // Validate password
+    if (!password) {
+      setPasswordError('Password is required');
+      hasErrors = true;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      hasErrors = true;
+    }
+
+    // Validate age
+    if (!age.trim()) {
+      setAgeError('Age is required');
+      hasErrors = true;
+    } else {
+      const ageNum = parseInt(age);
+      if (isNaN(ageNum)) {
+        setAgeError('Please enter a valid number');
+        hasErrors = true;
+      } else if (ageNum < 18) {
+        setAgeError('You must be at least 18 years old');
+        hasErrors = true;
+      } else if (ageNum > 100) {
+        setAgeError('Please enter a valid age');
+        hasErrors = true;
+      }
+    }
+
+    // If there are validation errors, don't proceed
+    if (hasErrors) {
       return;
     }
 
@@ -44,10 +96,10 @@ export default function InitialProfileSetupScreen() {
     try {
       // Simulate account creation
       await new Promise(resolve => setTimeout(resolve, 1000));
-      // Fixed navigation path to verification intro
+      // Navigate to verification intro
       router.push('/(verification)/intro');
     } catch (error: any) {
-      Alert.alert('Error', 'Account creation failed. Please try again.');
+      setEmailError('Account creation failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -55,6 +107,21 @@ export default function InitialProfileSetupScreen() {
 
   const handleBack = () => {
     router.back();
+  };
+
+  // Check if form is valid for button state
+  const isFormValid = () => {
+    return firstName.trim().length >= 2 && 
+           validateEmail(email.trim()) && 
+           password.length >= 6 && 
+           age.trim() && 
+           !isNaN(parseInt(age)) && 
+           parseInt(age) >= 18 && 
+           parseInt(age) <= 100 &&
+           !firstNameError && 
+           !emailError && 
+           !passwordError && 
+           !ageError;
   };
 
   return (
@@ -99,13 +166,22 @@ export default function InitialProfileSetupScreen() {
                     <Text style={styles.inputLabel}>First Name</Text>
                   </View>
                   <TextInput
-                    style={styles.input}
+                    style={[
+                      styles.input,
+                      firstNameError ? styles.inputError : null
+                    ]}
                     placeholder="Enter your first name"
                     value={firstName}
-                    onChangeText={setFirstName}
+                    onChangeText={(text) => {
+                      setFirstName(text);
+                      if (firstNameError) setFirstNameError('');
+                    }}
                     autoCapitalize="words"
                     autoCorrect={false}
                   />
+                  {firstNameError ? (
+                    <Text style={styles.errorText}>{firstNameError}</Text>
+                  ) : null}
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -114,14 +190,23 @@ export default function InitialProfileSetupScreen() {
                     <Text style={styles.inputLabel}>Email Address</Text>
                   </View>
                   <TextInput
-                    style={styles.input}
+                    style={[
+                      styles.input,
+                      emailError ? styles.inputError : null
+                    ]}
                     placeholder="Enter your email"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (emailError) setEmailError('');
+                    }}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
+                  {emailError ? (
+                    <Text style={styles.errorText}>{emailError}</Text>
+                  ) : null}
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -130,15 +215,25 @@ export default function InitialProfileSetupScreen() {
                     <Text style={styles.inputLabel}>Password</Text>
                   </View>
                   <TextInput
-                    style={styles.input}
+                    style={[
+                      styles.input,
+                      passwordError ? styles.inputError : null
+                    ]}
                     placeholder="Create a secure password"
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (passwordError) setPasswordError('');
+                    }}
                     secureTextEntry
                   />
-                  <Text style={styles.passwordHint}>
-                    Must be at least 6 characters
-                  </Text>
+                  {passwordError ? (
+                    <Text style={styles.errorText}>{passwordError}</Text>
+                  ) : (
+                    <Text style={styles.passwordHint}>
+                      Must be at least 6 characters
+                    </Text>
+                  )}
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -147,22 +242,35 @@ export default function InitialProfileSetupScreen() {
                     <Text style={styles.inputLabel}>Age</Text>
                   </View>
                   <TextInput
-                    style={styles.input}
+                    style={[
+                      styles.input,
+                      ageError ? styles.inputError : null
+                    ]}
                     placeholder="Enter your age"
                     value={age}
-                    onChangeText={setAge}
+                    onChangeText={(text) => {
+                      setAge(text);
+                      if (ageError) setAgeError('');
+                    }}
                     keyboardType="numeric"
                     maxLength={3}
                   />
-                  <Text style={styles.ageHint}>
-                    Must be 18 or older to join PuppyLove
-                  </Text>
+                  {ageError ? (
+                    <Text style={styles.errorText}>{ageError}</Text>
+                  ) : (
+                    <Text style={styles.ageHint}>
+                      Must be 18 or older to join PuppyLove
+                    </Text>
+                  )}
                 </View>
 
                 <TouchableOpacity
-                  style={[styles.continueButton, loading && styles.buttonDisabled]}
+                  style={[
+                    styles.continueButton, 
+                    (loading || !isFormValid()) && styles.buttonDisabled
+                  ]}
                   onPress={handleContinue}
-                  disabled={loading}
+                  disabled={loading || !isFormValid()}
                   activeOpacity={0.8}
                 >
                   <Text style={styles.continueButtonText}>
@@ -278,6 +386,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  inputError: {
+    borderColor: '#F86F6F',
+    backgroundColor: '#FFF8F8',
+  },
+  errorText: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    color: '#F86F6F',
+    marginTop: 4,
+    marginLeft: 4,
+  },
   passwordHint: {
     fontFamily: 'Inter-Regular',
     fontSize: 12,
@@ -306,6 +425,7 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     backgroundColor: '#B5C1B6',
+    shadowColor: '#B5C1B6',
   },
   continueButtonText: {
     fontFamily: 'Inter-SemiBold',
