@@ -1,7 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+// Get environment variables with fallbacks for development
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co';
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'demo-key';
+
+// Validate environment variables
+if (!supabaseUrl || supabaseUrl === 'https://demo.supabase.co') {
+  console.warn('⚠️ Using demo Supabase URL. Please set EXPO_PUBLIC_SUPABASE_URL in your .env file');
+}
+
+if (!supabaseAnonKey || supabaseAnonKey === 'demo-key') {
+  console.warn('⚠️ Using demo Supabase key. Please set EXPO_PUBLIC_SUPABASE_ANON_KEY in your .env file');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
