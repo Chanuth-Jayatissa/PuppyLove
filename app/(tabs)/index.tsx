@@ -7,6 +7,7 @@ import { Search, MessageSquare, Calendar, CreditCard as Edit3, Heart } from 'luc
 const progressSegments = [
   { title: 'Matches Revealed', icon: Heart, completed: true },
   { title: 'Chats Active', icon: MessageSquare, completed: true },
+  { title: 'Date Booking', icon: Calendar, completed: false },
 ];
 
 const quickActions = [
@@ -84,26 +85,34 @@ export default function HomeScreen() {
         {/* Match Cycle Progress */}
         <View style={styles.progressSection}>
           <Text style={styles.sectionTitle}>Your PuppyLove Journey</Text>
-          <View style={styles.progressBar}>
-            {progressSegments.map((segment, index) => (
-              <View key={index} style={styles.progressSegment}>
-                <View
-                  style={[
-                    styles.progressIcon,
-                    { backgroundColor: segment.completed ? '#7AC79E' : '#B5C1B6' }
-                  ]}
-                >
-                  <segment.icon size={16} color="white" strokeWidth={2} />
+          
+          <View style={styles.timelineWrapper}>
+            {/* Timeline Line */}
+            <View style={styles.timelineLine} />
+            
+            {/* Timeline Steps */}
+            <View style={styles.timelineSteps}>
+              {progressSegments.map((segment, index) => (
+                <View key={index} style={styles.timelineStep}>
+                  <View
+                    style={[
+                      styles.progressIcon,
+                      { backgroundColor: segment.completed ? '#7AC79E' : '#B5C1B6' }
+                    ]}
+                  >
+                    <segment.icon size={16} color="white" strokeWidth={2} />
+                  </View>
+                  <Text style={[
+                    styles.progressLabel,
+                    { color: segment.completed ? '#7AC79E' : '#B5C1B6' }
+                  ]}>
+                    {segment.title}
+                  </Text>
                 </View>
-                <Text style={[
-                  styles.progressLabel,
-                  { color: segment.completed ? '#7AC79E' : '#B5C1B6' }
-                ]}>
-                  {segment.title}
-                </Text>
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
+          
           <Text style={styles.progressText}>
             You've completed 3 of 5 matches · 2 chats active · Ready to book your dog date
           </Text>
@@ -192,16 +201,34 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#444B5A',
-    marginBottom: 16,
+    marginBottom: 24,
   },
-  progressBar: {
+  timelineWrapper: {
+    position: 'relative',
+    marginBottom: 20,
+    paddingHorizontal: 16,
+  },
+  timelineLine: {
+    position: 'absolute',
+    top: 16,
+    left: 48,
+    right: 48,
+    height: 3,
+    backgroundColor: '#E5E5E5',
+    borderRadius: 1.5,
+    zIndex: 1,
+  },
+  timelineSteps: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    alignItems: 'flex-start',
+    zIndex: 2,
   },
-  progressSegment: {
-    flex: 1,
+  timelineStep: {
     alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#FFF8F0',
+    paddingVertical: 8,
   },
   progressIcon: {
     width: 32,
@@ -209,18 +236,26 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   progressLabel: {
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
+    lineHeight: 16,
+    paddingHorizontal: 4,
   },
   progressText: {
     fontSize: 14,
     color: '#B5C1B6',
     textAlign: 'center',
     lineHeight: 20,
+    paddingHorizontal: 16,
   },
   actionsSection: {
     marginBottom: 32,
