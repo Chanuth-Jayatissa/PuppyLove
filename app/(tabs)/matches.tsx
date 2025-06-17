@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { MessageCircle, Calendar, Clock, Heart, User } from 'lucide-react-native';
 
 const timelineSteps = [
@@ -63,6 +64,8 @@ const matches = [
 ];
 
 export default function MatchesScreen() {
+  const router = useRouter();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'chat_active': return '#8EC6DB';
@@ -71,6 +74,62 @@ export default function MatchesScreen() {
       case 'expired': return '#B5C1B6';
       default: return '#B5C1B6';
     }
+  };
+
+  const handleMatchAction = (match: typeof matches[0]) => {
+    switch (match.status) {
+      case 'chat_active':
+      case 'awaiting_message':
+        router.push('/(tabs)/chat');
+        break;
+      case 'dog_date_unlocked':
+        Alert.alert(
+          'Book Your Dog Date! 🐾',
+          `Ready to meet ${match.name} at a local shelter? Choose a shelter, pick a dog, and schedule your first date together!`,
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            },
+            {
+              text: 'Book Date',
+              onPress: () => {
+                Alert.alert(
+                  'Booking Feature',
+                  'The dog date booking feature will help you:\n\n• Choose a nearby shelter\n• Pick a dog together\n• Schedule your meeting time\n• Get confirmation details',
+                  [{ text: 'Got it!' }]
+                );
+              }
+            }
+          ]
+        );
+        break;
+      default:
+        Alert.alert('Match Expired', 'This match has expired. Keep exploring to find new connections!');
+    }
+  };
+
+  const handleChooseDogsTogther = () => {
+    Alert.alert(
+      'Choose Dogs Together! 🐾',
+      'You and Sarah will both pick your favorite dogs from the available options. Once you both choose, you can book your date!',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Start Choosing',
+          onPress: () => {
+            Alert.alert(
+              'Dog Selection',
+              'This feature will let you and your match browse available dogs at local shelters and pick your favorites together!',
+              [{ text: 'Sounds great!' }]
+            );
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -159,6 +218,7 @@ export default function MatchesScreen() {
                     styles.actionButton,
                     { backgroundColor: getStatusColor(match.status) }
                   ]}
+                  onPress={() => handleMatchAction(match)}
                   activeOpacity={0.8}
                 >
                   <Text style={styles.actionButtonText}>{match.buttonText}</Text>
@@ -183,7 +243,11 @@ export default function MatchesScreen() {
           <Text style={styles.alertText}>
             You and Sarah both need to pick a dog for your date. Choose your favorite pup together!
           </Text>
-          <TouchableOpacity style={styles.alertButton}>
+          <TouchableOpacity 
+            style={styles.alertButton}
+            onPress={handleChooseDogsTogther}
+            activeOpacity={0.8}
+          >
             <Text style={styles.alertButtonText}>Choose Dogs Together</Text>
           </TouchableOpacity>
         </View>

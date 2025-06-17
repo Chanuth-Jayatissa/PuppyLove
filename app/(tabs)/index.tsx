@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { Search, MessageSquare, Calendar, CreditCard as Edit3, Heart } from 'lucide-react-native';
 
 const progressSegments = [
@@ -16,6 +17,7 @@ const quickActions = [
     icon: Search,
     cta: 'Let\'s Go',
     color: '#8EC6DB',
+    route: '/(tabs)/explore',
   },
   {
     title: 'Continue Compatibility Quiz',
@@ -23,6 +25,7 @@ const quickActions = [
     icon: Edit3,
     cta: 'Continue Quiz',
     color: '#FBBF77',
+    route: '/(tabs)/explore',
   },
   {
     title: 'See Who You Matched',
@@ -30,6 +33,7 @@ const quickActions = [
     icon: Heart,
     cta: 'View Matches',
     color: '#F86F6F',
+    route: '/(tabs)/matches',
   },
   {
     title: 'Update My Profile',
@@ -37,10 +41,38 @@ const quickActions = [
     icon: Edit3,
     cta: 'Edit Profile',
     color: '#7AC79E',
+    route: '/(tabs)/profile',
   },
 ];
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const handleActionPress = (action: typeof quickActions[0]) => {
+    if (action.route) {
+      router.push(action.route as any);
+    } else {
+      Alert.alert('Coming Soon', `${action.title} feature will be available soon!`);
+    }
+  };
+
+  const handleBookDate = () => {
+    Alert.alert(
+      'Book Your Dog Date',
+      'Ready to meet your match at a local shelter? This feature will help you schedule your first date!',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Go to Matches',
+          onPress: () => router.push('/(tabs)/matches')
+        }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -86,6 +118,7 @@ export default function HomeScreen() {
               <TouchableOpacity
                 key={index}
                 style={[styles.actionCard, { borderLeftColor: action.color }]}
+                onPress={() => handleActionPress(action)}
                 activeOpacity={0.7}
               >
                 <View style={styles.actionHeader}>
@@ -102,16 +135,24 @@ export default function HomeScreen() {
         </View>
 
         {/* Rotating Nudge Banner */}
-        <View style={styles.nudgeBanner}>
+        <TouchableOpacity 
+          style={styles.nudgeBanner}
+          onPress={handleBookDate}
+          activeOpacity={0.8}
+        >
           <Text style={styles.nudgeText}>
             Don't let Max down — book your shelter date today 🐾
           </Text>
-        </View>
+        </TouchableOpacity>
 
         {/* Footer CTA */}
         <View style={styles.footerSection}>
           <Text style={styles.footerText}>Haven't booked your dog date yet?</Text>
-          <TouchableOpacity style={styles.bookButton} activeOpacity={0.8}>
+          <TouchableOpacity 
+            style={styles.bookButton} 
+            onPress={handleBookDate}
+            activeOpacity={0.8}
+          >
             <Text style={styles.bookButtonText}>Book Now 🐾</Text>
           </TouchableOpacity>
         </View>
