@@ -40,6 +40,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(initial-profile)" options={{ headerShown: false }} />
         <Stack.Screen name="(verification)" options={{ headerShown: false }} />
         <Stack.Screen name="(profile-setup)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
