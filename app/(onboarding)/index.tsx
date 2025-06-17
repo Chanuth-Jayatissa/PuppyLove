@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -48,7 +48,6 @@ const onboardingData = [
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { setOnboardingComplete } = useLocalSearchParams();
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -65,12 +64,7 @@ export default function OnboardingScreen() {
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      // In production, save to AsyncStorage
-      // AsyncStorage.setItem('onboardingComplete', 'true');
-      if (typeof setOnboardingComplete === 'function') {
-        setOnboardingComplete(true);
-      }
-      router.replace('/(auth)/sign-in');
+      router.replace('/(onboarding)/signup');
     });
   };
 
@@ -145,6 +139,16 @@ export default function OnboardingScreen() {
       </ScrollView>
 
       {renderDots()}
+
+      {/* Back to Sign In Link */}
+      <View style={styles.backToSignIn}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backLink}
+        >
+          <Text style={styles.backLinkText}>Already have an account? Sign In</Text>
+        </TouchableOpacity>
+      </View>
     </Animated.View>
   );
 }
@@ -242,7 +246,7 @@ const styles = StyleSheet.create({
   },
   dotsContainer: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 140,
     left: 0,
     right: 0,
     flexDirection: 'row',
@@ -254,5 +258,22 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#B5C1B6',
+  },
+  backToSignIn: {
+    position: 'absolute',
+    bottom: 60,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  backLink: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  backLinkText: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 14,
+    color: '#8EC6DB',
+    textAlign: 'center',
   },
 });

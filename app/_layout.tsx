@@ -22,7 +22,6 @@ export default function RootLayout() {
   
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
-  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const [fontsLoaded, fontError] = useFonts({
     'PlayfairDisplay-Bold': PlayfairDisplay_700Bold,
@@ -36,14 +35,6 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError]);
 
-  // For demo purposes, we'll use a simple state
-  // In production, this should persist using AsyncStorage
-  useEffect(() => {
-    // Simulate checking onboarding status
-    // In real app: AsyncStorage.getItem('onboardingComplete')
-    setOnboardingComplete(false);
-  }, []);
-
   if (!fontsLoaded && !fontError) {
     return null;
   }
@@ -52,28 +43,13 @@ export default function RootLayout() {
     return null;
   }
 
-  // Show onboarding if not completed
-  if (!onboardingComplete) {
-    return (
-      <>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen 
-            name="(onboarding)" 
-            options={{ headerShown: false }}
-            initialParams={{ setOnboardingComplete }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </>
-    );
-  }
-
-  // Show auth flow if not authenticated
+  // Show auth flow if not authenticated (sign-in first)
   if (!user) {
     return (
       <>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </>
