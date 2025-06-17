@@ -64,7 +64,7 @@ export default function OnboardingScreen() {
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      router.replace('/(auth)/sign-in');
+      router.replace('/(verification)/intro');
     });
   };
 
