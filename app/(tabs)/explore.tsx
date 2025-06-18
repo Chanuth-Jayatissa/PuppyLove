@@ -460,12 +460,6 @@ export default function ExploreScreen() {
                 <Text style={styles.idealDayText}>{currentDog.fullProfile.idealDay}</Text>
               </View>
 
-              {/* Call to Action */}
-              <View style={styles.ctaSection}>
-                <Text style={styles.ctaText}>Ready to book your first date with {currentDog.name}?</Text>
-                <Text style={styles.ctaSubtext}>Swipe right if you'd love to meet! 💕</Text>
-              </View>
-
               {/* Bottom Padding for Scroll */}
               <View style={styles.bottomPadding} />
             </View>
@@ -753,28 +747,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#444B5A',
     lineHeight: 22,
-    fontStyle: 'italic',
-  },
-  ctaSection: {
-    backgroundColor: 'rgba(248, 111, 111, 0.1)',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: 'rgba(248, 111, 111, 0.2)',
-  },
-  ctaText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#444B5A',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  ctaSubtext: {
-    fontSize: 14,
-    color: '#F86F6F',
-    textAlign: 'center',
     fontStyle: 'italic',
   },
   bottomPadding: {
