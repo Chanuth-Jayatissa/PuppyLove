@@ -223,10 +223,10 @@ export default function ChatScreen() {
               {/* Header Section */}
               <View style={styles.profileHeader}>
                 <View style={styles.avatarSection}>
-                  <Text style={styles.dogAvatarLarge}>{selectedProfile.profile.dogAvatar.emoji}</Text>
+                  <Text style={styles.dogAvatarLarge}>{selectedProfile.dogAvatar.emoji}</Text>
                   <View style={styles.avatarInfo}>
-                    <Text style={styles.avatarLabel}>{selectedProfile.profile.dogAvatar.label}</Text>
-                    <Text style={styles.avatarTrait}>{selectedProfile.profile.dogAvatar.trait}</Text>
+                    <Text style={styles.avatarLabel}>{selectedProfile.dogAvatar.label}</Text>
+                    <Text style={styles.avatarTrait}>{selectedProfile.dogAvatar.trait}</Text>
                   </View>
                 </View>
                 
