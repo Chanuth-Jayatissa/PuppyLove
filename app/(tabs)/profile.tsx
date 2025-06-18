@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check } from 'lucide-react-native';
+import { Check, MapPin, Calendar } from 'lucide-react-native';
 
 const mockDogAvatars = [
   { id: '1', emoji: '🐕‍🦺', label: 'Corgi', trait: 'Loyal & Low-key' },
@@ -50,6 +50,10 @@ export default function ProfileScreen() {
   const [consideringAdoption, setConsideringAdoption] = useState(false);
   const [preferredEnergy, setPreferredEnergy] = useState('Medium');
   const [preferredSize, setPreferredSize] = useState('Any');
+  
+  // New fields for location and age
+  const [age, setAge] = useState('28');
+  const [city, setCity] = useState('Brooklyn');
 
   const togglePrompt = (prompt: string) => {
     if (selectedPrompts.includes(prompt)) {
@@ -72,7 +76,7 @@ export default function ProfileScreen() {
 
   const getCompletionPercentage = () => {
     let completed = 0;
-    let total = 6;
+    let total = 8; // Updated total to include age and city
 
     if (selectedAvatar) completed++;
     if (selectedPrompts.length >= 3 && selectedPrompts.every(p => promptAnswers[p]?.length > 0)) completed++;
@@ -80,6 +84,8 @@ export default function ProfileScreen() {
     if (selectedTags.length >= 3) completed++;
     if (hasDog) completed++;
     if (preferredEnergy && preferredSize) completed++;
+    if (age && parseInt(age) >= 18) completed++; // Age validation
+    if (city && city.trim().length >= 2) completed++; // City validation
 
     return Math.round((completed / total) * 100);
   };
@@ -96,6 +102,42 @@ export default function ProfileScreen() {
             <View 
               style={[styles.progressFill, { width: `${getCompletionPercentage()}%` }]} 
             />
+          </View>
+        </View>
+
+        {/* Basic Info Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Basic Information</Text>
+          
+          <View style={styles.basicInfoGrid}>
+            <View style={styles.basicInfoItem}>
+              <View style={styles.basicInfoHeader}>
+                <Calendar size={20} color="#FBBF77" strokeWidth={2} />
+                <Text style={styles.basicInfoLabel}>Age</Text>
+              </View>
+              <TextInput
+                style={styles.basicInfoInput}
+                placeholder="Enter your age"
+                value={age}
+                onChangeText={setAge}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+            </View>
+
+            <View style={styles.basicInfoItem}>
+              <View style={styles.basicInfoHeader}>
+                <MapPin size={20} color="#8EC6DB" strokeWidth={2} />
+                <Text style={styles.basicInfoLabel}>City</Text>
+              </View>
+              <TextInput
+                style={styles.basicInfoInput}
+                placeholder="Enter your city"
+                value={city}
+                onChangeText={setCity}
+                autoCapitalize="words"
+              />
+            </View>
           </View>
         </View>
 
@@ -387,6 +429,34 @@ const styles = StyleSheet.create({
     color: '#8EC6DB',
     fontWeight: '600',
     marginBottom: 16,
+  },
+  basicInfoGrid: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  basicInfoItem: {
+    flex: 1,
+  },
+  basicInfoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  basicInfoLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#444B5A',
+    marginLeft: 6,
+  },
+  basicInfoInput: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#444B5A',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   avatarGrid: {
     flexDirection: 'row',
