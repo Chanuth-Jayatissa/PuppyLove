@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, PanResponder, Animated, Dimensions, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Heart, X, ChevronDown, MapPin, Sparkles } from 'lucide-react-native';
+import { Heart, X, ChevronDown, MapPin, Sparkles, ChevronUp } from 'lucide-react-native';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -24,11 +24,30 @@ const mockDogs = [
       { icon: '🐾', label: 'Friendly' },
       { icon: '⚡', label: 'High Energy' }
     ],
+    allTemperamentTags: [
+      { icon: '🧸', label: 'Lap Dog' },
+      { icon: '🐾', label: 'Friendly' },
+      { icon: '⚡', label: 'High Energy' },
+      { icon: '🎾', label: 'Loves Fetch' },
+      { icon: '👶', label: 'Great with Kids' },
+      { icon: '🏃', label: 'Active Companion' }
+    ],
     funFact: 'Loves chasing squeaky toys 🎾 and soft snuggles 💕',
     fullProfile: {
-      thingsILove: ['Long walks in the park', 'Playing fetch', 'Meeting new friends'],
-      stillLearning: ['Walking on a leash', 'Not jumping on visitors'],
-      idealDay: 'A morning hike followed by a nap in the sunshine'
+      thingsILove: [
+        'Long walks in the park with lots of sniffing time',
+        'Playing fetch until I\'m completely exhausted',
+        'Meeting new friends (both human and dog!)',
+        'Belly rubs that last forever',
+        'Splashing in puddles after rain'
+      ],
+      stillLearning: [
+        'Walking on a leash without pulling too much',
+        'Not jumping on visitors when I\'m excited',
+        'Sharing my favorite tennis ball',
+        'Staying calm during thunderstorms'
+      ],
+      idealDay: 'A morning hike followed by a nap in the sunshine, then some playtime at the dog park, and ending with cuddles on the couch while watching movies together.'
     }
   },
   {
@@ -49,11 +68,30 @@ const mockDogs = [
       { icon: '💝', label: 'Gentle Soul' },
       { icon: '🎾', label: 'Loves Fetch' }
     ],
+    allTemperamentTags: [
+      { icon: '🧠', label: 'Smart Cookie' },
+      { icon: '💝', label: 'Gentle Soul' },
+      { icon: '🎾', label: 'Loves Fetch' },
+      { icon: '🏃', label: 'Athletic' },
+      { icon: '🎯', label: 'Focused' },
+      { icon: '🌟', label: 'Quick Learner' }
+    ],
     funFact: 'Can solve puzzle toys in under 5 minutes! 🧩✨',
     fullProfile: {
-      thingsILove: ['Mental challenges', 'Agility courses', 'Learning new tricks'],
-      stillLearning: ['Patience during grooming', 'Sharing toys'],
-      idealDay: 'Brain games in the morning, then a challenging hike'
+      thingsILove: [
+        'Mental challenges that make me think hard',
+        'Agility courses and obstacle training',
+        'Learning new tricks and commands',
+        'Herding anything that moves (including leaves!)',
+        'Problem-solving games with treats'
+      ],
+      stillLearning: [
+        'Patience during grooming sessions',
+        'Sharing toys with other dogs',
+        'Not herding small children at the park',
+        'Relaxing when there\'s nothing to do'
+      ],
+      idealDay: 'Brain games in the morning to tire out my mind, then a challenging hike with lots of new sights and smells, followed by training time where I can show off my skills.'
     }
   },
   {
@@ -74,11 +112,30 @@ const mockDogs = [
       { icon: '🌅', label: 'Morning Person' },
       { icon: '💆', label: 'Gentle Soul' }
     ],
+    allTemperamentTags: [
+      { icon: '🌿', label: 'Nature-Loving' },
+      { icon: '🌅', label: 'Morning Person' },
+      { icon: '💆', label: 'Gentle Soul' },
+      { icon: '👃', label: 'Scent Tracker' },
+      { icon: '🛋️', label: 'Couch Buddy' },
+      { icon: '🍪', label: 'Treat Lover' }
+    ],
     funFact: 'Champion nap-taker and treat connoisseur! 😴🍪',
     fullProfile: {
-      thingsILove: ['Sniffing adventures', 'Cozy blankets', 'Gentle pets'],
-      stillLearning: ['Coming when called during exciting smells'],
-      idealDay: 'A leisurely sniff walk followed by a cozy afternoon nap'
+      thingsILove: [
+        'Sniffing adventures where I can follow interesting scents',
+        'Cozy blankets and warm sunny spots',
+        'Gentle pets behind my ears',
+        'Discovering new treats and flavors',
+        'Peaceful walks without rushing'
+      ],
+      stillLearning: [
+        'Coming when called during exciting smell investigations',
+        'Not begging too obviously for table scraps',
+        'Walking past the cat next door without stopping',
+        'Sharing my favorite napping spots'
+      ],
+      idealDay: 'A leisurely sniff walk in the morning when all the best smells are fresh, followed by a cozy afternoon nap in a sunny spot, then some gentle playtime and treats before settling in for evening cuddles.'
     }
   }
 ];
@@ -103,7 +160,8 @@ export default function ExploreScreen() {
   const [imageIndex, setImageIndex] = useState(0);
   const [exploredCount, setExploredCount] = useState(0);
   const [quizAnswered, setQuizAnswered] = useState(0);
-  const [expandedCard, setExpandedCard] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [showScrollCue, setShowScrollCue] = useState(true);
 
   const pan = new Animated.ValueXY();
   const rotate = pan.x.interpolate({
@@ -113,7 +171,10 @@ export default function ExploreScreen() {
   });
 
   const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      // Only respond to horizontal swipes, not vertical scrolls
+      return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10;
+    },
     onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
       useNativeDriver: false,
     }),
@@ -154,7 +215,8 @@ export default function ExploreScreen() {
   const nextCard = () => {
     pan.setValue({ x: 0, y: 0 });
     setImageIndex(0);
-    setExpandedCard(false);
+    setScrollOffset(0);
+    setShowScrollCue(true);
     setExploredCount(prev => prev + 1);
     
     if ((exploredCount + 1) % 3 === 0) {
@@ -176,16 +238,24 @@ export default function ExploreScreen() {
     setImageIndex((prev) => (prev + 1) % currentDog.images.length);
   };
 
+  const handleScroll = (event: any) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollOffset(offsetY);
+    if (offsetY > 10 && showScrollCue) {
+      setShowScrollCue(false);
+    }
+  };
+
   const getEnergyTintColor = (energyLevel: string) => {
     switch (energyLevel) {
       case 'Chill Companion':
-        return 'rgba(181, 193, 182, 0.15)'; // Sage Gray overlay
+        return 'rgba(181, 193, 182, 0.08)'; // Sage Gray overlay
       case 'Playful Explorer':
-        return 'rgba(251, 191, 119, 0.15)'; // Golden Apricot overlay
+        return 'rgba(251, 191, 119, 0.08)'; // Golden Apricot overlay
       case 'High-Octane':
-        return 'rgba(248, 111, 111, 0.15)'; // Warm Coral overlay
+        return 'rgba(248, 111, 111, 0.08)'; // Warm Coral overlay
       default:
-        return 'rgba(142, 198, 219, 0.15)'; // Default blue overlay
+        return 'rgba(142, 198, 219, 0.08)'; // Default blue overlay
     }
   };
 
@@ -275,113 +345,140 @@ export default function ExploreScreen() {
         <Animated.View
           style={[
             styles.card,
-            { backgroundColor: getEnergyTintColor(currentDog.energyLevel) },
             {
               transform: [{ translateX: pan.x }, { translateY: pan.y }, { rotate }],
             },
           ]}
           {...panResponder.panHandlers}
         >
-          {/* Image Section */}
-          <TouchableOpacity onPress={cycleImage} style={styles.imageSection}>
-            <Image source={{ uri: currentDog.images[imageIndex] }} style={styles.dogImage} />
-            
-            {/* Overlay Badges */}
-            <View style={styles.overlayBadges}>
-              <View style={styles.energyBadge}>
-                <Text style={styles.energyBadgeText}>{currentDog.energyLevel}</Text>
-              </View>
-              <View style={styles.distanceBadge}>
-                <MapPin size={12} color="#B5C1B6" strokeWidth={2} />
-                <Text style={styles.distanceBadgeText}>{currentDog.distance}</Text>
-              </View>
-            </View>
-
-            {/* Image Pagination Dots */}
-            <View style={styles.imageIndicators}>
-              {currentDog.images.map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.indicator,
-                    { backgroundColor: index === imageIndex ? '#F86F6F' : 'rgba(255, 255, 255, 0.5)' }
-                  ]}
-                />
-              ))}
-            </View>
-          </TouchableOpacity>
-
-          {/* Content Section */}
-          <View style={styles.contentSection}>
-            {/* Dog Identity */}
-            <View style={styles.dogIdentity}>
-              <Text style={styles.dogName}>
-                {currentDog.name} • {currentDog.age} • {currentDog.breed}
-              </Text>
-              <View style={styles.sizeTag}>
-                <Text style={styles.sizeIcon}>{getSizeIcon(currentDog.size)}</Text>
-                <Text style={styles.sizeText}>{currentDog.size}</Text>
-              </View>
-            </View>
-
-            {/* Temperament Tags */}
-            <View style={styles.temperamentTags}>
-              {currentDog.temperamentTags.map((tag, index) => (
-                <View key={index} style={styles.temperamentTag}>
-                  <Text style={styles.temperamentIcon}>{tag.icon}</Text>
-                  <Text style={styles.temperamentText}>{tag.label}</Text>
+          {/* Energy Tint Overlay */}
+          <View style={[styles.energyTint, { backgroundColor: getEnergyTintColor(currentDog.energyLevel) }]} />
+          
+          {/* Scrollable Content */}
+          <ScrollView
+            style={styles.scrollableContent}
+            showsVerticalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            bounces={true}
+          >
+            {/* Image Section */}
+            <TouchableOpacity onPress={cycleImage} style={styles.imageSection}>
+              <Image source={{ uri: currentDog.images[imageIndex] }} style={styles.dogImage} />
+              
+              {/* Overlay Badges */}
+              <View style={styles.overlayBadges}>
+                <View style={styles.energyBadge}>
+                  <Text style={styles.energyBadgeText}>{currentDog.energyLevel}</Text>
                 </View>
-              ))}
-            </View>
+                <View style={styles.distanceBadge}>
+                  <MapPin size={12} color="#B5C1B6" strokeWidth={2} />
+                  <Text style={styles.distanceBadgeText}>{currentDog.distance}</Text>
+                </View>
+              </View>
 
-            {/* Fun Fact */}
-            <View style={styles.funFactContainer}>
-              <Text style={styles.funFact}>"{currentDog.funFact}"</Text>
-            </View>
-
-            {/* Expandable Section */}
-            <TouchableOpacity 
-              style={styles.expandButton}
-              onPress={() => setExpandedCard(!expandedCard)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.expandText}>More About {currentDog.name}</Text>
-              <ChevronDown 
-                size={16} 
-                color="#8EC6DB" 
-                strokeWidth={2}
-                style={[
-                  styles.expandIcon,
-                  expandedCard && { transform: [{ rotate: '180deg' }] }
-                ]}
-              />
+              {/* Image Pagination Dots */}
+              <View style={styles.imageIndicators}>
+                {currentDog.images.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.indicator,
+                      { backgroundColor: index === imageIndex ? '#F86F6F' : 'rgba(255, 255, 255, 0.6)' }
+                    ]}
+                  />
+                ))}
+              </View>
             </TouchableOpacity>
 
-            {/* Expanded Content */}
-            {expandedCard && (
-              <ScrollView style={styles.expandedContent} showsVerticalScrollIndicator={false}>
-                <View style={styles.expandedSection}>
-                  <Text style={styles.expandedSectionTitle}>🎾 Things I love...</Text>
+            {/* Content Section */}
+            <View style={styles.contentSection}>
+              {/* Dog Identity */}
+              <View style={styles.dogIdentity}>
+                <Text style={styles.dogName}>
+                  {currentDog.name} • {currentDog.age} • {currentDog.breed}
+                </Text>
+                <View style={styles.sizeTag}>
+                  <Text style={styles.sizeIcon}>{getSizeIcon(currentDog.size)}</Text>
+                  <Text style={styles.sizeText}>{currentDog.size}</Text>
+                </View>
+              </View>
+
+              {/* Temperament Tags (Preview) */}
+              <View style={styles.temperamentTags}>
+                {currentDog.temperamentTags.map((tag, index) => (
+                  <View key={index} style={styles.temperamentTag}>
+                    <Text style={styles.temperamentIcon}>{tag.icon}</Text>
+                    <Text style={styles.temperamentText}>{tag.label}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Fun Fact - Enhanced Readability */}
+              <View style={styles.funFactContainer}>
+                <View style={styles.funFactHeader}>
+                  <Sparkles size={16} color="#FBBF77" strokeWidth={2} />
+                  <Text style={styles.funFactLabel}>Fun Fact</Text>
+                </View>
+                <Text style={styles.funFact}>"{currentDog.funFact}"</Text>
+              </View>
+
+              {/* Full Temperament Tags */}
+              <View style={styles.fullTemperamentSection}>
+                <Text style={styles.sectionTitle}>All My Traits</Text>
+                <View style={styles.allTemperamentTags}>
+                  {currentDog.allTemperamentTags.map((tag, index) => (
+                    <View key={index} style={styles.fullTemperamentTag}>
+                      <Text style={styles.temperamentIcon}>{tag.icon}</Text>
+                      <Text style={styles.temperamentText}>{tag.label}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* Expanded Profile Sections */}
+              <View style={styles.profileSection}>
+                <Text style={styles.sectionTitle}>🎾 Things I love...</Text>
+                <View style={styles.profileList}>
                   {currentDog.fullProfile.thingsILove.map((item, index) => (
-                    <Text key={index} style={styles.expandedItem}>• {item}</Text>
+                    <Text key={index} style={styles.profileItem}>• {item}</Text>
                   ))}
                 </View>
+              </View>
 
-                <View style={styles.expandedSection}>
-                  <Text style={styles.expandedSectionTitle}>📚 I'm still learning...</Text>
+              <View style={styles.profileSection}>
+                <Text style={styles.sectionTitle}>📚 I'm still learning...</Text>
+                <View style={styles.profileList}>
                   {currentDog.fullProfile.stillLearning.map((item, index) => (
-                    <Text key={index} style={styles.expandedItem}>• {item}</Text>
+                    <Text key={index} style={styles.profileItem}>• {item}</Text>
                   ))}
                 </View>
+              </View>
 
-                <View style={styles.expandedSection}>
-                  <Text style={styles.expandedSectionTitle}>☀️ My ideal day out...</Text>
-                  <Text style={styles.expandedItem}>{currentDog.fullProfile.idealDay}</Text>
-                </View>
-              </ScrollView>
-            )}
-          </View>
+              <View style={styles.profileSection}>
+                <Text style={styles.sectionTitle}>☀️ My ideal day out...</Text>
+                <Text style={styles.idealDayText}>{currentDog.fullProfile.idealDay}</Text>
+              </View>
+
+              {/* Call to Action */}
+              <View style={styles.ctaSection}>
+                <Text style={styles.ctaText}>Ready to book your first date with {currentDog.name}?</Text>
+                <Text style={styles.ctaSubtext}>Swipe right if you'd love to meet! 💕</Text>
+              </View>
+
+              {/* Bottom Padding for Scroll */}
+              <View style={styles.bottomPadding} />
+            </View>
+          </ScrollView>
         </Animated.View>
+
+        {/* Scroll Cue */}
+        {showScrollCue && (
+          <Animated.View style={[styles.scrollCue, { opacity: showScrollCue ? 1 : 0 }]}>
+            <ChevronUp size={20} color="#8EC6DB" strokeWidth={2} />
+            <Text style={styles.scrollCueText}>Swipe up to meet me better!</Text>
+          </Animated.View>
+        )}
 
         {/* Floating Action Buttons */}
         <View style={styles.actionButtons}>
@@ -443,9 +540,22 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
     overflow: 'hidden',
+    position: 'relative',
+  },
+  energyTint: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+  },
+  scrollableContent: {
+    flex: 1,
+    zIndex: 2,
   },
   imageSection: {
-    height: '58%',
+    height: screenHeight * 0.35,
     position: 'relative',
   },
   dogImage: {
@@ -515,7 +625,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   contentSection: {
-    flex: 1,
     padding: 20,
     backgroundColor: '#FFF8F0',
   },
@@ -532,7 +641,7 @@ const styles = StyleSheet.create({
   sizeTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(142, 198, 219, 0.1)',
+    backgroundColor: 'rgba(142, 198, 219, 0.15)',
     borderRadius: 12,
     paddingVertical: 4,
     paddingHorizontal: 8,
@@ -551,7 +660,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   temperamentTag: {
     flexDirection: 'row',
@@ -576,58 +685,123 @@ const styles = StyleSheet.create({
     color: '#444B5A',
   },
   funFactContainer: {
-    backgroundColor: 'rgba(251, 191, 119, 0.1)',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-    borderLeftWidth: 3,
-    borderLeftColor: '#FBBF77',
+    backgroundColor: 'rgba(142, 198, 219, 0.12)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#8EC6DB',
   },
-  funFact: {
-    fontSize: 14,
-    color: '#444B5A',
-    fontStyle: 'italic',
-    lineHeight: 20,
-  },
-  expandButton: {
+  funFactHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(142, 198, 219, 0.1)',
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
     marginBottom: 8,
   },
-  expandText: {
+  funFactLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#8EC6DB',
-    marginRight: 6,
+    color: '#444B5A',
+    marginLeft: 6,
   },
-  expandIcon: {
-    transition: 'transform 0.3s ease',
+  funFact: {
+    fontSize: 15,
+    color: '#444B5A',
+    fontStyle: 'italic',
+    lineHeight: 22,
+    fontWeight: '500',
   },
-  expandedContent: {
-    maxHeight: 120,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 12,
-    padding: 12,
-  },
-  expandedSection: {
-    marginBottom: 12,
-  },
-  expandedSectionTitle: {
-    fontSize: 13,
+  sectionTitle: {
+    fontSize: 16,
     fontWeight: '600',
     color: '#444B5A',
-    marginBottom: 6,
+    marginBottom: 12,
   },
-  expandedItem: {
+  fullTemperamentSection: {
+    marginBottom: 24,
+  },
+  allTemperamentTags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  fullTemperamentTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 14,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(142, 198, 219, 0.2)',
+  },
+  profileSection: {
+    marginBottom: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    borderRadius: 16,
+    padding: 16,
+  },
+  profileList: {
+    gap: 8,
+  },
+  profileItem: {
+    fontSize: 14,
+    color: '#444B5A',
+    lineHeight: 20,
+    paddingLeft: 4,
+  },
+  idealDayText: {
+    fontSize: 14,
+    color: '#444B5A',
+    lineHeight: 22,
+    fontStyle: 'italic',
+  },
+  ctaSection: {
+    backgroundColor: 'rgba(248, 111, 111, 0.1)',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: 'rgba(248, 111, 111, 0.2)',
+  },
+  ctaText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#444B5A',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  ctaSubtext: {
+    fontSize: 14,
+    color: '#F86F6F',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  bottomPadding: {
+    height: 100,
+  },
+  scrollCue: {
+    position: 'absolute',
+    bottom: 110,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 248, 240, 0.95)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    marginHorizontal: 60,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  scrollCueText: {
     fontSize: 12,
-    color: '#6B7280',
-    lineHeight: 16,
-    marginBottom: 2,
+    color: '#8EC6DB',
+    fontWeight: '600',
+    marginTop: 2,
   },
   actionButtons: {
     position: 'absolute',
