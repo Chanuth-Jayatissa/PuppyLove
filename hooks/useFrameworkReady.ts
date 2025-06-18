@@ -1,13 +1,1 @@
-import { useEffect } from 'react';
-
-declare global {
-  interface Window {
-    frameworkReady?: () => void;
-  }
-}
-
-export function useFrameworkReady() {
-  useEffect(() => {
-    window.frameworkReady?.();
-  });
-}
+// This file was removed because it is no longer used anywhere in the codebase.

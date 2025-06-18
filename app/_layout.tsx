@@ -10,14 +10,11 @@ import {
   Inter_400Regular,
   Inter_600SemiBold,
 } from '@expo-google-fonts/inter';
-import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  useFrameworkReady();
-
   const [fontsLoaded, fontError] = useFonts({
     'PlayfairDisplay-Bold': PlayfairDisplay_700Bold,
     'Inter-Regular': Inter_400Regular,
