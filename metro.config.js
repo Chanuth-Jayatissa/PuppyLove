@@ -2,6 +2,8 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
+// Add TypeScript extensions to the resolver
+config.resolver.sourceExts = ['jsx', 'js', 'ts', 'tsx', 'json'];
 config.resolver.platforms = ['ios', 'android', 'native', 'web'];
 
 // Reduce the number of watched files
