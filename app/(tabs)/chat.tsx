@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet, Modal, Animated, Dimensions, PanResponder } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, Clock, Send, MoveVertical as MoreVertical, Calendar, X, Heart, MapPin, User, Tag } from 'lucide-react-native';
+import { fetchMessages, sendMessage } from '../../lib/chat';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -137,6 +138,9 @@ export default function ChatScreen() {
   const [showMiniProfile, setShowMiniProfile] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
   const [slideAnim] = useState(new Animated.Value(screenHeight));
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const openMiniProfile = (chatData: any) => {
     setSelectedProfile(chatData);
@@ -434,6 +438,40 @@ export default function ChatScreen() {
     </ScrollView>
   );
 
+  // Fetch messages when a chat is selected
+  useEffect(() => {
+    if (selectedChat) {
+      setLoading(true);
+      setError(null);
+      fetchMessages()
+        .then((data) => {
+          setMessages(data || []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError('Failed to load messages');
+          setLoading(false);
+        });
+    }
+  }, [selectedChat]);
+
+  // Send message handler
+  const handleSend = async () => {
+    if (!message.trim()) return;
+    try {
+      setLoading(true);
+      await sendMessage(message, 'me'); // Replace 'me' with actual sender if available
+      setMessage('');
+      // Refetch messages after sending
+      const data = await fetchMessages();
+      setMessages(data || []);
+    } catch (err) {
+      setError('Failed to send message');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderChatThread = () => {
     const currentChat = chatData.find(chat => chat.id === selectedChat);
     if (!currentChat) return null;
@@ -470,7 +508,9 @@ export default function ChatScreen() {
 
         {/* Messages */}
         <ScrollView style={styles.messagesContainer} showsVerticalScrollIndicator={false}>
-          {sampleMessages.map((msg) => (
+          {loading && <Text>Loading...</Text>}
+          {error && <Text style={{ color: 'red' }}>{error}</Text>}
+          {messages.map((msg) => (
             <View
               key={msg.id}
               style={[
@@ -478,8 +518,8 @@ export default function ChatScreen() {
                 msg.sender === 'me' ? styles.myMessage : styles.theirMessage,
               ]}
             >
-              <Text style={styles.messageText}>{msg.text}</Text>
-              <Text style={styles.messageTimestamp}>{msg.timestamp}</Text>
+              <Text style={styles.messageText}>{msg.content}</Text>
+              <Text style={styles.messageTimestamp}>{msg.created_at ? new Date(msg.created_at).toLocaleTimeString() : ''}</Text>
             </View>
           ))}
           {/* Paw trail decoration */}
@@ -504,7 +544,7 @@ export default function ChatScreen() {
             >
               <Text style={styles.icebreakText}>💡</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.sendButton}>
+            <TouchableOpacity style={styles.sendButton} onPress={handleSend} disabled={loading}>
               <Send size={20} color="white" strokeWidth={2} />
             </TouchableOpacity>
           </View>
